@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
+#include "conn/connection.h"
 
 int main() {
-    SDL_Window *window;                    // Declare a pointer
+    /*SDL_Window *window;                    // Declare a pointer
 
     SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
@@ -31,6 +32,9 @@ int main() {
     SDL_DestroyWindow(window);
 
     // Clean up
-    SDL_Quit();
+    SDL_Quit();*/
+
+    test_connection();
+
     return 0;
 }
