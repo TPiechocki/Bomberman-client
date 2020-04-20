@@ -1,5 +1,5 @@
 //
-// Created by ves on 20/04/2020.
+// Created by Kacper on 20/04/2020.
 //
 
 #include "connection.h"
@@ -14,11 +14,31 @@ void test_connection(){
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
 
-    int result = getaddrinfo("2472e337.eu.ngrok.io", "5000", &hints, &infoptr);
+    /*struct sockaddr_in server;
+    socket_desc = socket(AF_INET , SOCK_STREAM , 0);
+    if (socket_desc == -1)
+    {
+        printf("Could not create socket");
+    }
+
+    server.sin_addr.s_addr = inet_addr("87.207.30.151");
+    server.sin_family = AF_INET;
+    server.sin_port = htons( 5000 );*/
+
+
+    int result = getaddrinfo("0.tcp.eu.ngrok.io", "11820", &hints, &infoptr);
     if(result) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         return;
     }
+
+    /*
+    char host[256];
+    for (p = infoptr; p != NULL; p = p->ai_next) {
+
+        getnameinfo(p->ai_addr, p->ai_addrlen, host, sizeof (host), NULL, 0, NI_NUMERICHOST);
+        puts(host);
+    }*/
 
     for(p = infoptr; p != NULL; p =p->ai_next)
     {
@@ -29,7 +49,7 @@ void test_connection(){
 
         if(connect(socket_desc, p->ai_addr, p->ai_addrlen) != -1) {
             puts("Connected");
-            break;      /* Success */
+            break;      // Success
         }
 
         close(socket_desc);
@@ -41,14 +61,23 @@ void test_connection(){
     }
 
     freeaddrinfo(infoptr);
+
+    /*if (connect(socket_desc , (struct sockaddr *)&server , sizeof(server)) < 0)
+    {
+        puts("connect error");
+        return;
+    }
+
+    puts("Connected");*/
+
     char *m = "Hello, World!\n";
     if( send(socket_desc, m, strlen(m), 0) < 0){
         fprintf(stderr, "Send failed\n");
         return;
     }
     puts("Sent!");
-    char rec[200];
-    if( recv(socket_desc, rec, 200, 0) < 0)
+    char rec[500];
+    if( recv(socket_desc, rec, 500, 0) < 0)
         fprintf(stderr, "Recv failed\n");
     puts("Reply received.");
     puts(rec);
