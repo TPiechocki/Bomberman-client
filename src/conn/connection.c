@@ -14,7 +14,7 @@ void test_connection(){
     hints.ai_flags = 0;
     hints.ai_protocol = 0;
 
-    int result = getaddrinfo("www.google.com", "50000", &hints, &infoptr);
+    int result = getaddrinfo("2472e337.eu.ngrok.io", "5000", &hints, &infoptr);
     if(result) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         return;
@@ -41,7 +41,7 @@ void test_connection(){
     }
 
     freeaddrinfo(infoptr);
-    /*char *m = "Hello, World!\n";
+    char *m = "Hello, World!\n";
     if( send(socket_desc, m, strlen(m), 0) < 0){
         fprintf(stderr, "Send failed\n");
         return;
@@ -51,7 +51,7 @@ void test_connection(){
     if( recv(socket_desc, rec, 200, 0) < 0)
         fprintf(stderr, "Recv failed\n");
     puts("Reply received.");
-    puts(rec);*/
+    puts(rec);
 
     close(socket_desc);
 }
