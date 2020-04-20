@@ -13,6 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
+// add argument to pass port number for TCP connection
 void test_connection();
 
 #endif //BOMBERMAN_CLIENT_CONNECTION_H
