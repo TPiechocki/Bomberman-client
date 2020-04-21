@@ -1,15 +1,17 @@
 #include <stdio.h>
-#include <SDL2/SDL.h>
+#include "player.c"
 #include "conn/connection.h"
 
-int main() {
-    /*SDL_Window *window;                    // Declare a pointer
 
+
+int main() {
+    SDL_Window *window;                    // Declare a pointer
+    SDL_Renderer *renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED);
     SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
 
     // Create an application window with the following settings:
     window = SDL_CreateWindow(
-            "An SDL2 window",                  // window title
+            "Bomberman",                  // window title
             SDL_WINDOWPOS_UNDEFINED,           // initial x position
             SDL_WINDOWPOS_UNDEFINED,           // initial y position
             640,                               // width, in pixels
@@ -24,17 +26,31 @@ int main() {
         return 1;
     }
 
-    // The window is open: could enter program loop here (see SDL_PollEvent())
 
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+    Player p;
+    LoadPlayer(renderer, p, "..//sprites//kwadrat.png");
+    while (1)
+    {
+        // Get the next event
+        SDL_Event event;
+        SDL_RenderPresent(renderer);
+        if (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                break;
+            }
+        }
+    }
+
+
 
     // Close and destroy the window
     SDL_DestroyWindow(window);
-
     // Clean up
-    SDL_Quit();*/
+    SDL_Quit();
 
-    test_connection();
+    //test_connection();
 
     return 0;
 }
