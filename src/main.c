@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "player.c"
+#include "player.h"
 #include "conn/connection.h"
 
 
@@ -28,7 +28,7 @@ int main() {
 
 
     Player p;
-    LoadPlayer(renderer, p, "..//sprites//kwadrat.png");
+    LoadPlayer(renderer, p, "./../sprites/Green_square.png");
     while (1)
     {
         // Get the next event

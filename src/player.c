@@ -1,15 +1,9 @@
 //
 // Created by pioter on 20.04.2020.
 //
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-typedef struct Player
-{
-    SDL_Surface *loadedImage;
-    SDL_Texture *texture;
-} Player;
+#include "player.h"
 
-static inline void LoadPlayer(SDL_Renderer *renderer, Player p, const char *fileName) //Ładowanie tekstury gracza
+void LoadPlayer(SDL_Renderer *renderer, Player p, const char *fileName) //Ładowanie tekstury gracza
 {
     p.loadedImage = IMG_Load(fileName);
     if(p.loadedImage == NULL) {
