@@ -3,14 +3,17 @@
 //
 #include "player.h"
 
-void LoadPlayer(SDL_Renderer *renderer, Player p, const char *fileName) //Ładowanie tekstury gracza
+void LoadPlayer(SDL_Renderer *renderer, Player *p) //Ładowanie tekstury gracza
 {
-    p.loadedImage = IMG_Load(fileName);
-    if(p.loadedImage == NULL) {
+    p->surface = IMG_Load(PLAYER_SPRITE_PATH);
+    if(p->surface == NULL) {
         printf("Blad przy wczytywaniu plikow!");
         return;
     }
-    p.texture = SDL_CreateTextureFromSurface(renderer, p.loadedImage);
-    SDL_FreeSurface(p.loadedImage);
-    SDL_RenderCopy(renderer, p.texture, NULL, NULL);
+    p->texture = SDL_CreateTextureFromSurface(renderer, p->surface);
+    p->image.w = 20;//Rozmiar dla testów, do zmiany
+    p->image.h = 20;
+    p->image.x = 100;
+    p->image.y = 100;
+    SDL_FreeSurface(p->surface);
 }
