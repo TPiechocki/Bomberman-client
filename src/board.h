@@ -8,12 +8,16 @@
 #ifndef BOMBERMAN_CLIENT_BOARD_H
 #define BOMBERMAN_CLIENT_BOARD_H
 
-#define OUTSIDE_WALL_SPRITE_PATH "./../sprites/Blue_square.png"
+#define OUTSIDE_WALL_SPRITE_PATH "./../sprites/Wall.png"
+#define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
 
 typedef struct Board{
-    SDL_Surface *s;
+    SDL_Surface *outsideWallSurface;
+    SDL_Surface *iceBlockSurface;
     SDL_Texture *outsideWallTexture;
+    SDL_Texture *iceBlockTexture;
     SDL_Rect outsideWalls[4];
+    SDL_Rect iceBlocks[36];
 } Board;
 
 void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);

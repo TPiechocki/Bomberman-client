@@ -30,7 +30,7 @@ int main() {
     Board board;
     Player p;
     LoadBoard(window, renderer, &board);
-    LoadPlayer(renderer, &p);
+    LoadPlayer(window, renderer, &p);
     while (1)
     {
         // Get the next event
@@ -38,17 +38,25 @@ int main() {
 
         if (SDL_PollEvent(&event))
         {
-
+            if(event.type == SDL_KEYDOWN)
+            {
+                if(event.key.keysym.sym == SDLK_SPACE)
+                {
+                    //Bomby
+                }
+            }
             if (event.type == SDL_QUIT)
             {
                 break;
             }
         }
-
+        //Wyswietlanie
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, p.texture, NULL, &p.image);
         for(int i = 0; i < 4; i++)
-            SDL_RenderCopy(renderer, board.outsideWallTexture, NULL, &board.outsideWalls[i]);
+           SDL_RenderCopy(renderer, board.outsideWallTexture, NULL, &board.outsideWalls[i]);
+        for(int i = 0; i < 36; i++)
+            SDL_RenderCopy(renderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);
         SDL_RenderPresent(renderer);
     }
 

@@ -15,6 +15,5 @@ typedef struct Player
     SDL_Rect image;
 } Player;
 
-void LoadPlayer(SDL_Renderer *renderer, Player *p); //Ładowanie tekstury gracza
-
+void LoadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Ładowanie tekstury gracza
 #endif //BOMBERMAN_CLIENT_PLAYER_H

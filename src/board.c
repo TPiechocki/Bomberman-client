@@ -5,17 +5,20 @@
 
 void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
 {
-    board->s= IMG_Load(OUTSIDE_WALL_SPRITE_PATH);
-    if(board->s == NULL) {
+    board->outsideWallSurface= IMG_Load(OUTSIDE_WALL_SPRITE_PATH);
+    board->iceBlockSurface= IMG_Load(ICE_WALL_SPRITE_PATH);
+    if(board->outsideWallSurface == NULL || board->iceBlockSurface== NULL) {
         printf("Blad boardrzy wczytywaniu plikow!");
         return;
     }
-    board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, board->s);
+    board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, board->outsideWallSurface);
 
     int windowWidth;
     int windowHeight;
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
+    //Ustawianie zewnetrznych scian
+    //Kazda szeroka na 1/10 wymiaru ekranu
     board->outsideWalls[0].w = windowWidth; //Gorna sciana
     board->outsideWalls[0].h = windowHeight / 10;
     board->outsideWalls[0].x = 0;
@@ -36,5 +39,20 @@ void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
     board->outsideWalls[3].x = 0;
     board->outsideWalls[3].y = windowHeight * 9 / 10;
 
+    SDL_FreeSurface(board->outsideWallSurface);
+
+    //Ustawianie blokow na planszy
+    board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, board->iceBlockSurface);
+
+    for(int i = 0; i < 6; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            board->iceBlocks[6 * i + j].w = windowWidth * 4 / 5 / 13;
+            board->iceBlocks[6 * i + j].h = windowHeight * 4 / 5 / 13;
+            board->iceBlocks[6 * i + j].x = windowWidth / 10 + (2 * j + 1) * windowHeight * 4 / 5 / 13;
+            board->iceBlocks[6 * i + j].y = windowHeight / 10 + (2 * i + 1) * windowHeight * 4 / 5 / 13;
+        }
+    }
 
 }
