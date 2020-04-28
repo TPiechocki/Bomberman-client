@@ -1,17 +1,17 @@
 //
-// Created by boardioter on 21.04.2020.
+// Created by pioter on 21.04.2020.
 //
 #include "board.h"
 
 void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
 {
-    board->outsideWallSurface= IMG_Load(OUTSIDE_WALL_SPRITE_PATH);
-    board->iceBlockSurface= IMG_Load(ICE_WALL_SPRITE_PATH);
-    if(board->outsideWallSurface == NULL || board->iceBlockSurface== NULL) {
-        printf("Blad boardrzy wczytywaniu plikow!");
+    SDL_Surface *outsideWallSurface= IMG_Load(OUTSIDE_WALL_SPRITE_PATH);
+    SDL_Surface *iceBlockSurface= IMG_Load(ICE_WALL_SPRITE_PATH);
+    if(outsideWallSurface == NULL || iceBlockSurface== NULL) {
+        printf("Blad przy wczytywaniu plikow!");
         return;
     }
-    board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, board->outsideWallSurface);
+    board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, outsideWallSurface);
 
     int windowWidth;
     int windowHeight;
@@ -39,10 +39,10 @@ void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
     board->outsideWalls[3].x = 0;
     board->outsideWalls[3].y = windowHeight * 9 / 10;
 
-    SDL_FreeSurface(board->outsideWallSurface);
+    SDL_FreeSurface(outsideWallSurface);
 
     //Ustawianie blokow na planszy
-    board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, board->iceBlockSurface);
+    board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, iceBlockSurface);
 
     for(int i = 0; i < 6; i++)
     {
@@ -55,4 +55,5 @@ void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
         }
     }
 
+    SDL_FreeSurface(iceBlockSurface);
 }
