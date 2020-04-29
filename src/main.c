@@ -20,15 +20,24 @@ int main() {
         Player p;
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer, &p);
+        //Board struct
         Board board;
+        //Loading board data
         LoadBoard(window.gWindow, window.gRenderer, &board);
         // Event handler
         SDL_Event e;
         while (window.run) {
             // Event polling queue
             while (SDL_PollEvent(&e) != 0){
-                // User request quit
+
                 switch (e.type) {
+                    case SDL_KEYDOWN:
+                        changeMove(&p, e);
+                        break;
+                    case SDL_KEYUP:
+                        brake(&p, e);
+                        break;
+                    // User request quit
                     case SDL_QUIT:
                         window.run = SDL_FALSE;
                         break;
@@ -36,7 +45,7 @@ int main() {
                         break;
                 }
             }
-
+            moving(&p);
             // Rendering
             SDL_RenderClear(window.gRenderer);
             SDL_RenderCopy(window.gRenderer, p.texture, NULL, &p.image);

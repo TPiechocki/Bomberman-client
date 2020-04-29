@@ -14,8 +14,16 @@ typedef struct Player
 {
     SDL_Texture *texture;
     SDL_Rect image;
+    int verticalDirection;
+    int horizontalDirection;
+    int x;
+    int y;
+    int counter;
 } Player;
 
-void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Ładowanie tekstury gracza
+void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Loading player texture
+void moving(Player *p);
+void changeMove(Player *p, SDL_Event e);//Change direction of moving
+void brake(Player *player, SDL_Event e);//Stop moving
 
 #endif //BOMBERMAN_CLIENT_PLAYER_H
