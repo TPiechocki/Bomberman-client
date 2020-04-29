@@ -50,7 +50,7 @@ void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
         {
             board->iceBlocks[6 * i + j].w = windowWidth * 4 / 5 / 13;
             board->iceBlocks[6 * i + j].h = windowHeight * 4 / 5 / 13;
-            board->iceBlocks[6 * i + j].x = windowWidth / 10 + (2 * j + 1) * windowHeight * 4 / 5 / 13;
+            board->iceBlocks[6 * i + j].x = windowWidth / 10 + (2 * j + 1) * windowWidth * 4 / 5 / 13;
             board->iceBlocks[6 * i + j].y = windowHeight / 10 + (2 * i + 1) * windowHeight * 4 / 5 / 13;
         }
     }

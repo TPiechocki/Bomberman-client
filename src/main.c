@@ -4,6 +4,7 @@
 #include "window.h"
 #include "conn/connection.h"
 #include "player.h"
+#include "board.h"
 
 
 int main() {
@@ -19,8 +20,8 @@ int main() {
         Player p;
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer, &p);
-        /*Board board;
-        LoadBoard(window, renderer, &board);*/
+        Board board;
+        LoadBoard(window.gWindow, window.gRenderer, &board);
         // Event handler
         SDL_Event e;
         while (window.run) {
@@ -39,10 +40,10 @@ int main() {
             // Rendering
             SDL_RenderClear(window.gRenderer);
             SDL_RenderCopy(window.gRenderer, p.texture, NULL, &p.image);
-                /*for(int i = 0; i < 4; i++)
-                   SDL_RenderCopy(renderer, board.outsideWallTexture, NULL, &board.outsideWalls[i]);
+                for(int i = 0; i < 4; i++)
+                   SDL_RenderCopy(window.gRenderer, board.outsideWallTexture, NULL, &board.outsideWalls[i]);
                 for(int i = 0; i < 36; i++)
-                    SDL_RenderCopy(renderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);*/
+                    SDL_RenderCopy(window.gRenderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);
             SDL_RenderPresent(window.gRenderer);
         }
     }
