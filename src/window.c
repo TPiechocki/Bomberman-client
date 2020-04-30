@@ -37,7 +37,7 @@ int init(Window* window){
     }
 
     // Set default renderer draw colour
-    SDL_SetRenderDrawColor(window->gRenderer, 0xcc, 0xcc, 0xcc, 0xff);
+    SDL_SetRenderDrawColor(window->gRenderer, 0x77, 0x77, 0x77, 0xff);
 
     // Get window surface
     window->gScreenSurface = SDL_GetWindowSurface(window->gWindow);

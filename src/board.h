@@ -21,14 +21,17 @@ typedef struct Board{
     SDL_Texture *outsideWallTexture;
     SDL_Texture *iceBlockTexture;
     SDL_Rect outsideWalls[4];
-    SDL_Rect iceBlocks[36];
+    SDL_Rect iceBlocks[25];
 } Board;
 
 void initBoard(Board* board, SDL_Window* window);
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);
 
+void renderBoard(SDL_Renderer* renderer, Board* board);
+
 void renderOutsideWalls(Board* board, SDL_Renderer* renderer);
 void renderChessBoard(SDL_Renderer* renderer, Board* board);
+void renderIceBlocks(SDL_Renderer* renderer, Board* board);
 
 #endif //BOMBERMAN_CLIENT_BOARD_H

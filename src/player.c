@@ -4,8 +4,6 @@
 #include "player.h"
 
 void initPlayer(Player *player, Board *board) {
-    player->x = board->start_x;
-    player->y = board->start_y;
     player->counter = 0;
     player->verticalDirection = player->horizontalDirection = 0;
 
@@ -17,8 +15,10 @@ void initPlayer(Player *player, Board *board) {
 
     player->image.w = board->length / board->size * 9 / 10;
     player->image.h = player->image.w;
-    player->image.x = (int)player->x;
-    player->image.y = (int)player->y;
+    player->x = board->start_x + player->image.w / 2;
+    player->y = board->start_y + player->image.w / 2;
+    player->image.x = (int)player->x - player->image.w / 2;
+    player->image.y = (int)player->y - player->image.w / 2;
 }
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
@@ -66,23 +66,25 @@ void movePlayer(Player* player, Board* board, double timeStep){
         scale = 1/sqrt(2);
     // Move left or right
     player->x += player->velX * scale * timeStep;
+
     // Check if it didn't go out of bounds
-    if(player->x < board->start_x)
-        player->x = board->start_x; // move to the left edge if going out of bounds
-    else if(player->x + player->image.w > board->end_x + 1)
-        player->x = board->end_x - player->image.w; // move to the right edge if going out of bounds
+    if(player->x - player->image.h / 2 < board->start_x)
+        player->x = board->start_x + player->image.w / 2; // move to the left edge if going out of bounds
+    else if(player->x + player->image.w / 2 > board->end_x + 1)
+        player->x = board->end_x - player->image.w / 2; // move to the right edge if going out of bounds
     else
-        player->image.x = (int)player->x; // assign new coord if they didn't
+        player->image.x = (int)player->x - player->image.w / 2; // assign new coord if they didn't
 
     // Move up or down
     player->y += player->velY * scale * timeStep;
+
     // Check if it didn't go out of bounds
-    if(player->y < board->start_y)
-        player->y = board->start_y; // move to the top edge if going out of bounds
-    else if (player->y + player->image.h > board->end_y + 1)
-        player->y = board->end_y - player->image.h; // move to the bottom edge if going out of bounds
+    if(player->y - player->image.h / 2 < board->start_y)
+        player->y = board->start_y + player->image.h / 2; // move to the top edge if going out of bounds
+    else if (player->y + player->image.h / 2 > board->end_y + 1)
+        player->y = board->end_y - player->image.h / 2; // move to the bottom edge if going out of bounds
     else
-        player->image.y = (int)player->y; // assign new coord if they didn't go out of bounds
+        player->image.y = (int)player->y - player->image.h / 2; // assign new coord if they didn't go out of bounds
 }
 
 void renderPlayer(Player *player, SDL_Renderer *renderer) {

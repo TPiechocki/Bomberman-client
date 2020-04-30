@@ -61,22 +61,16 @@ int main() {
 
             // Moving player
             movePlayer(&player, &board, timeStep);
+            //moving(&player);
 
             // Restart step timer / velocity timer
             startVTimer(&vTimer);
 
-            //moving(&player);
             // Clearing renderer
             SDL_RenderClear(window.gRenderer);
 
-            // Render arena outside walls / colour outside of arena
-            renderOutsideWalls(&board, window.gRenderer);
-
-            /*for(int i = 0; i < 36; i++)
-                SDL_RenderCopy(window.gRenderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);*/
-
-            // Render Chessboard
-            renderChessBoard(window.gRenderer, &board);
+            // Render board
+            renderBoard(window.gRenderer, &board);
 
             // Render player
             renderPlayer(&player, window.gRenderer);

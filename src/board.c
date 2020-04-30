@@ -30,6 +30,9 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
         return;
     }
     board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, outsideWallSurface);
+    SDL_FreeSurface(outsideWallSurface);
+    board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, iceBlockSurface);
+    SDL_FreeSurface(iceBlockSurface);
 
     int windowWidth;
     int windowHeight;
@@ -63,23 +66,23 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
     board->outsideWalls[2].x = board->end_x;
     board->outsideWalls[2].y = 0;
 
-    SDL_FreeSurface(outsideWallSurface);
+    // Ice block init
+    int tile_length = board->length / board->size;
+    int index = 0;
 
-    //Ustawianie blokow na planszy
-    board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, iceBlockSurface);
-
-    for(int i = 0; i < 6; i++)
+    for(int i = 0; i < board->size; i++)
     {
-        for (int j = 0; j < 6; j++)
+        for (int j = 0; j < board->size; j++)
         {
-            board->iceBlocks[6 * i + j].w = windowWidth * 4 / 5 / 13;
-            board->iceBlocks[6 * i + j].h = windowHeight * 4 / 5 / 13;
-            board->iceBlocks[6 * i + j].x = windowWidth / 10 + (2 * j + 1) * windowWidth * 4 / 5 / 13;
-            board->iceBlocks[6 * i + j].y = windowHeight / 10 + (2 * i + 1) * windowHeight * 4 / 5 / 13;
+            if(i % 2 == 1 && j % 2 == 1) {
+                board->iceBlocks[index].w = tile_length;
+                board->iceBlocks[index].h = tile_length;
+                board->iceBlocks[index].x = j * tile_length + board->start_x;
+                board->iceBlocks[index].y = i * tile_length + board->start_y;
+                index++;
+            }
         }
     }
-
-    SDL_FreeSurface(iceBlockSurface);
 }
 
 void renderOutsideWalls(Board *board, SDL_Renderer *renderer) {
@@ -90,7 +93,7 @@ void renderOutsideWalls(Board *board, SDL_Renderer *renderer) {
 void renderChessBoard(SDL_Renderer* renderer, Board* board){
     int tile_size = (board->length) / board->size; // 11 tiles per arena
 
-    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255); // dark gray
+    SDL_SetRenderDrawColor(renderer, 0x66, 0x66, 0x66, 0xff); // dark gray
     for(int i = 0; i < board->size; i++){
         for(int j = 0; j < board->size; j++){
             if((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1)){
@@ -103,6 +106,20 @@ void renderChessBoard(SDL_Renderer* renderer, Board* board){
             }
         }
     }
-    SDL_SetRenderDrawColor(renderer, 0xcc, 0xcc, 0xcc, 0xff); // base bg colour
+    SDL_SetRenderDrawColor(renderer, 0x77, 0x77, 0x77, 0xff); // base bg colour
+}
+
+void renderIceBlocks(SDL_Renderer *renderer, Board *board) {
+    for(int i = 0; i < 25; i++)
+        SDL_RenderCopy(renderer, board->iceBlockTexture, NULL, &board->iceBlocks[i]);
+}
+
+void renderBoard(SDL_Renderer *renderer, Board *board) {
+    // Render arena outside walls / colour outside of arena
+    renderOutsideWalls(board, renderer);
+    // Render Chessboard pattern
+    renderChessBoard(renderer, board);
+    // Render ice blocks
+    renderIceBlocks(renderer, board);
 }
 
