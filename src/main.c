@@ -78,6 +78,9 @@ int main() {
             // Presenting data in renderer
             SDL_RenderPresent(window.gRenderer);
         }
+        // Freeing resources for rendered elements
+        closeBoard(&board);
+        closePlayer(&player);
     }
     //test_connection();
 

@@ -34,4 +34,6 @@ void renderOutsideWalls(Board* board, SDL_Renderer* renderer);
 void renderChessBoard(SDL_Renderer* renderer, Board* board);
 void renderIceBlocks(SDL_Renderer* renderer, Board* board);
 
+void closeBoard(Board* board);
+
 #endif //BOMBERMAN_CLIENT_BOARD_H

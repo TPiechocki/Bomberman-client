@@ -15,8 +15,9 @@ void initPlayer(Player *player, Board *board) {
 
     player->image.w = board->length / board->size * 9 / 10;
     player->image.h = player->image.w;
-    player->x = board->start_x + player->image.w / 2;
-    player->y = board->start_y + player->image.w / 2;
+    // positioning in the middle of top left tile
+    player->x = board->start_x + player->image.w / 2 + (board->length / board->size * 6 / 100);
+    player->y = board->start_y + player->image.w / 2 + (board->length / board->size * 6 / 100);
     player->image.x = (int)player->x - player->image.w / 2;
     player->image.y = (int)player->y - player->image.w / 2;
 }
@@ -151,4 +152,9 @@ void brake(Player *player, SDL_Event event)
                 player->horizontalDirection = 0;
             break;
     }
+}
+
+void closePlayer(Player *player) {
+    if(player->texture != NULL)
+        SDL_DestroyTexture(player->texture);
 }

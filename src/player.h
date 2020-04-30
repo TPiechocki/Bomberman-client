@@ -34,6 +34,8 @@ void movePlayer(Player* player, Board* board, double timeStep);
 
 void renderPlayer(Player* player, SDL_Renderer* renderer);
 
+void closePlayer(Player* player);
+
 void moving(Player *p);
 void changeMove(Player *p, SDL_Event e);//Change direction of moving
 void brake(Player *player, SDL_Event e);//Stop moving

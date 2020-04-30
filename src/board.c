@@ -123,3 +123,10 @@ void renderBoard(SDL_Renderer *renderer, Board *board) {
     renderIceBlocks(renderer, board);
 }
 
+void closeBoard(Board *board) {
+    if(board->iceBlockTexture != NULL)
+        SDL_DestroyTexture(board->iceBlockTexture);
+    if(board->outsideWallTexture != NULL)
+        SDL_DestroyTexture(board->outsideWallTexture);
+}
+
