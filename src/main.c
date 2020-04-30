@@ -5,6 +5,7 @@
 #include "conn/connection.h"
 #include "player.h"
 #include "board.h"
+#include "timers/vtimer.h"
 
 
 int main() {
@@ -16,19 +17,21 @@ int main() {
         fprintf(stderr, "Error in init.");
     }
     else {
-        // Board struct
-        Board board;
         // Initialize Board data
+        Board board;
         initBoard(&board, window.gWindow);
         // Loading board data
         loadBoard(window.gWindow, window.gRenderer, &board);
 
-        // Player struct
-        Player player;
         // Initialize Player data
+        Player player;
         initPlayer(&player, &board);
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer, &player);
+
+        // Initialize Velocity Timer
+        VTimer vTimer;
+        initVTimer(&vTimer);
 
         // Event handler
         SDL_Event e;
@@ -53,8 +56,15 @@ int main() {
                 }
             }
 
+            // Calculate time step -> ms -> s
+            double timeStep = getTicksVTimer(&vTimer) / 1000.f;
+
             // Moving player
-            movePlayer(&player, &board);
+            movePlayer(&player, &board, timeStep);
+
+            // Restart step timer / velocity timer
+            startVTimer(&vTimer);
+
             //moving(&player);
             // Clearing renderer
             SDL_RenderClear(window.gRenderer);

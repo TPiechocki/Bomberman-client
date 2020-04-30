@@ -30,7 +30,7 @@ void initPlayer(Player* player, Board* board);
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Loading player texture
 
 void handlePlayerEvent(Player* player, SDL_Event* e);
-void movePlayer(Player* player, Board* board);
+void movePlayer(Player* player, Board* board, double timeStep);
 
 void renderPlayer(Player* player, SDL_Renderer* renderer);
 
