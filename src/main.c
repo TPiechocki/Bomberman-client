@@ -16,14 +16,20 @@ int main() {
         fprintf(stderr, "Error in init.");
     }
     else {
-        // Player struct
-        Player p;
-        // Loading player data
-        loadPlayer(window.gWindow, window.gRenderer, &p);
-        //Board struct
+        // Board struct
         Board board;
-        //Loading board data
-        LoadBoard(window.gWindow, window.gRenderer, &board);
+        // Initialize Board data
+        initBoard(&board, window.gWindow);
+        // Loading board data
+        loadBoard(window.gWindow, window.gRenderer, &board);
+
+        // Player struct
+        Player player;
+        // Initialize Player data
+        initPlayer(&player, &board);
+        // Loading player data
+        loadPlayer(window.gWindow, window.gRenderer, &player);
+
         // Event handler
         SDL_Event e;
         while (window.run) {
@@ -31,28 +37,41 @@ int main() {
             while (SDL_PollEvent(&e) != 0){
 
                 switch (e.type) {
-                    case SDL_KEYDOWN:
-                        changeMove(&p, e);
+                    /*case SDL_KEYDOWN:
+                        changeMove(&player, e);
                         break;
                     case SDL_KEYUP:
-                        brake(&p, e);
-                        break;
+                        brake(&player, e);
+                        break;*/
                     // User request quit
                     case SDL_QUIT:
                         window.run = SDL_FALSE;
                         break;
                     default:
+                        handlePlayerEvent(&player, &e);
                         break;
                 }
             }
-            moving(&p);
-            // Rendering
+
+            // Moving player
+            movePlayer(&player, &board);
+            //moving(&player);
+            // Clearing renderer
             SDL_RenderClear(window.gRenderer);
-            SDL_RenderCopy(window.gRenderer, p.texture, NULL, &p.image);
-                for(int i = 0; i < 4; i++)
-                   SDL_RenderCopy(window.gRenderer, board.outsideWallTexture, NULL, &board.outsideWalls[i]);
-                for(int i = 0; i < 36; i++)
-                    SDL_RenderCopy(window.gRenderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);
+
+            // Render arena outside walls / colour outside of arena
+            renderOutsideWalls(&board, window.gRenderer);
+
+            /*for(int i = 0; i < 36; i++)
+                SDL_RenderCopy(window.gRenderer, board.iceBlockTexture, NULL, &board.iceBlocks[i]);*/
+
+            // Render Chessboard
+            renderChessBoard(window.gRenderer, &board);
+
+            // Render player
+            renderPlayer(&player, window.gRenderer);
+
+            // Presenting data in renderer
             SDL_RenderPresent(window.gRenderer);
         }
     }

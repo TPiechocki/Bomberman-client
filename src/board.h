@@ -12,11 +12,23 @@
 #define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
 
 typedef struct Board{
+    int start_x;
+    int start_y;
+    int end_x;
+    int end_y;
+    int size;
+    int length;
     SDL_Texture *outsideWallTexture;
     SDL_Texture *iceBlockTexture;
     SDL_Rect outsideWalls[4];
     SDL_Rect iceBlocks[36];
 } Board;
 
-void LoadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);
+void initBoard(Board* board, SDL_Window* window);
+
+void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);
+
+void renderOutsideWalls(Board* board, SDL_Renderer* renderer);
+void renderChessBoard(SDL_Renderer* renderer, Board* board);
+
 #endif //BOMBERMAN_CLIENT_BOARD_H

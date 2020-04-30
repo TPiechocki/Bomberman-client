@@ -3,6 +3,24 @@
 //
 #include "player.h"
 
+void initPlayer(Player *player, Board *board) {
+    player->x = board->start_x;
+    player->y = board->start_y;
+    player->counter = 0;
+    player->verticalDirection = player->horizontalDirection = 0;
+
+    double tilePerFrame = 0.003;
+
+    player->velocity = (double)board->length / board->size * tilePerFrame;
+    player->velX = 0;
+    player->velY = 0;
+
+    player->image.w = board->length / board->size * 9 / 10;
+    player->image.h = player->image.w;
+    player->image.x = (int)player->x;
+    player->image.y = (int)player->y;
+}
+
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
 {
     SDL_Surface *surface = IMG_Load(PLAYER_SPRITE_PATH);
@@ -14,17 +32,59 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
     int windowHeight;
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
-    p->counter = 0;
-    p->verticalDirection = p->horizontalDirection = 0;
-    p->x = windowWidth / 10;
-    p->y = windowHeight / 10;
     p->texture = SDL_CreateTextureFromSurface(renderer, surface);
-    p->image.w = windowWidth / 20;
-    p->image.h = windowHeight / 20;
-    p->image.x = p->x;
-    p->image.y = p->y;
     SDL_FreeSurface(surface);
 }
+
+void handlePlayerEvent(Player *player, SDL_Event *e) {
+    // If key was pressed
+    if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
+        // Adjust velocity (start moving)
+        switch (e->key.keysym.sym) {
+            case SDLK_UP: player->velY -= player->velocity; break;
+            case SDLK_DOWN: player->velY += player->velocity; break;
+            case SDLK_LEFT: player->velX -= player->velocity; break;
+            case SDLK_RIGHT: player->velX += player->velocity; break;
+        }
+    }
+    else if( e->type == SDL_KEYUP && e->key.repeat == 0){
+        // Adjust velocity (stop moving)
+        switch (e->key.keysym.sym) {
+            case SDLK_UP: player->velY += player->velocity; break;
+            case SDLK_DOWN: player->velY -= player->velocity; break;
+            case SDLK_LEFT: player->velX += player->velocity; break;
+            case SDLK_RIGHT: player->velX -= player->velocity; break;
+        }
+    }
+}
+
+void movePlayer(Player* player, Board* board){
+    // Scale for diagonal movement
+    double scale = 1;
+    // If the diagonal movement occurs, scale it down
+    if(player->velX != 0 && player->velY != 0)
+        scale = 1/sqrt(2);
+    // Move left or right
+    player->x += player->velX * scale;
+    // Check if it didn't go out of bounds
+    if(player->x < board->start_x || (player->x + player->image.w > board->end_x + 1))
+        player->x -= player->velX * scale; // move back if they did want to go out of bounds
+    else
+        player->image.x = (int)player->x; // assign new coord if they didn't
+
+    // Move up or down
+    player->y += player->velY * scale;
+    // Check if it didn't go out of bounds
+    if(player->y < board->start_y || (player->y + player->image.h > board->end_y + 1))
+        player->y -= player->velY * scale; // move back if they did want to go out of bounds
+    else
+        player->image.y = (int)player->y; // assign new coord if they didn't
+}
+
+void renderPlayer(Player *player, SDL_Renderer *renderer) {
+    SDL_RenderCopy(renderer, player->texture, NULL, &player->image);
+}
+
 
 void changeMove(Player *player, SDL_Event event)
 {

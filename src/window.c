@@ -48,6 +48,7 @@ void close_window(Window* window){
     // Destroy renderer
     SDL_DestroyRenderer(window->gRenderer);
     window->gRenderer = NULL;
+
     // Destroy window
     SDL_DestroyWindow(window->gWindow);
     window->gWindow = NULL;
