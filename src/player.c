@@ -128,7 +128,7 @@ void movePlayer(Player* player, Board* board, double timeStep){
                 temp[1][0] = fabs(player->y - (board->iceBlocks[i].y + board->iceBlocks[i].w + player->image.w / 2));
                 temp[1][1] = board->iceBlocks[i].y + board->iceBlocks[i].h + player->image.h / 2;
             }
-            
+
             if (temp[1][0] == 0 || (temp[0][0] != 0 && temp[0][0] <= temp[1][0]))
                 player->x = temp[0][1];
             else
