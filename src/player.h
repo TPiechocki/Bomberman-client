@@ -17,9 +17,7 @@ typedef struct Player
     SDL_Rect image;
     double x;
     double y;
-    int counter;
-    int verticalDirection;
-    int horizontalDirection;
+    int current_tile;
     double velocity;
     double velX;
     double velY;
@@ -32,12 +30,11 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Loadin
 void handlePlayerEvent(Player* player, SDL_Event* e);
 void movePlayer(Player* player, Board* board, double timeStep);
 
+void placeBombPlayer(Player* player);
+
 void renderPlayer(Player* player, SDL_Renderer* renderer);
 
 void closePlayer(Player* player);
 
-void moving(Player *p);
-void changeMove(Player *p, SDL_Event e);//Change direction of moving
-void brake(Player *player, SDL_Event e);//Stop moving
 
 #endif //BOMBERMAN_CLIENT_PLAYER_H

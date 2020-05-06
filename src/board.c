@@ -19,6 +19,8 @@ void initBoard(Board* board, SDL_Window* window){
     board->end_x = windowWidth / 2 + windowHeight * 9 / 20 - pixel_difference / 2;
     board->end_y = windowHeight * 19 / 20 - pixel_difference / 2;
     board->length = board->end_x - board->start_x;
+    board->tile_length = board->length / board->size;
+    board->iceBlocksCount = 25;
 }
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
@@ -49,22 +51,22 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board)
     board->outsideWalls[0].y = 0;
 
     //Dolna sciana
-    board->outsideWalls[3].w = windowWidth;
-    board->outsideWalls[3].h = board->start_y;
-    board->outsideWalls[3].x = 0;
-    board->outsideWalls[3].y = board->end_y;
+    board->outsideWalls[1].w = windowWidth;
+    board->outsideWalls[1].h = board->start_y;
+    board->outsideWalls[1].x = 0;
+    board->outsideWalls[1].y = board->end_y;
 
     //Lewa sciana
-    board->outsideWalls[1].w = board->start_x;
-    board->outsideWalls[1].h = windowHeight;
-    board->outsideWalls[1].x = 0;
-    board->outsideWalls[1].y = 0;
-
-    //Prawa sciana
     board->outsideWalls[2].w = board->start_x;
     board->outsideWalls[2].h = windowHeight;
-    board->outsideWalls[2].x = board->end_x;
+    board->outsideWalls[2].x = 0;
     board->outsideWalls[2].y = 0;
+
+    //Prawa sciana
+    board->outsideWalls[3].w = board->start_x;
+    board->outsideWalls[3].h = windowHeight;
+    board->outsideWalls[3].x = board->end_x;
+    board->outsideWalls[3].y = 0;
 
     // Ice block init
     int tile_length = board->length / board->size;

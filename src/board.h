@@ -18,10 +18,12 @@ typedef struct Board{
     int end_y;
     int size;
     int length;
+    int tile_length;
     SDL_Texture *outsideWallTexture;
     SDL_Texture *iceBlockTexture;
     SDL_Rect outsideWalls[4];
     SDL_Rect iceBlocks[25];
+    int iceBlocksCount;
 } Board;
 
 void initBoard(Board* board, SDL_Window* window);
