@@ -4,9 +4,6 @@
 #include "player.h"
 
 void initPlayer(Player *player, Board *board) {
-    player->counter = 0;
-    player->verticalDirection = player->horizontalDirection = 0;
-
     double tilesPerSecond = 3;
 
     player->velocity = tilesPerSecond * (double)board->length / board->size; // tile per second
@@ -111,13 +108,13 @@ void movePlayer(Player* player, Board* board, double timeStep){
         else{
             // collision happened with ice wall
             // NOT WORKING PROPERLY
-            if(player->x <= board->iceBlocks[i].x + board->iceBlocks[i].w / 2 && player->velX > 0) // player left from block
+            if(player->x >= board->iceBlocks[i].x - player->image.w / 2 && player->velX > 0.0f) // player left from block
                 player->x = board->iceBlocks[i].x - player->image.w / 2;
-            if(player->x >= board->iceBlocks[i].x + board->iceBlocks[i].w / 2 && player->velX < 0) // player right from block
+            if(player->x <= board->iceBlocks[i].x + board->iceBlocks[i].w + player->image.w / 2 && player->velX < 0) // player right from block
                 player->x = board->iceBlocks[i].x + board->iceBlocks[i].w + player->image.w / 2;
-            if(player->y <= board->iceBlocks[i].y + board->iceBlocks[i].h / 2 && player->velY > 0) // player up from block
+            if(player->y >= board->iceBlocks[i].y - player->image.h / 2 && player->velY > 0) // player up from block
                 player->y = board->iceBlocks[i].y - player->image.h / 2;
-            if(player->y >= board->iceBlocks[i].y + board->iceBlocks[i].h / 2 && player->velY < 0) // player down from block
+            if(player->y <= board->iceBlocks[i].y + board->iceBlocks[i].w + player->image.w / 2 && player->velY < 0) // player down from block
                 player->y = board->iceBlocks[i].y + board->iceBlocks[i].h + player->image.h / 2;
         }
     }
