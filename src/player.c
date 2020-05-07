@@ -10,7 +10,11 @@ void initPlayer(Player *player, Board *board) {
     player->velX = 0;
     player->velY = 0;
 
-    player->image.w = board->length / board->size * 9 / 10;
+    player->counter = 0;
+    player->onBomb = 0;
+    player->placedBomb = 0;
+
+    player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
     // positioning in the middle of top left tile
     player->x = board->start_x + player->image.w / 2 + (board->length / board->size * 6 / 100);

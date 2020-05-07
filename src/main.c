@@ -5,7 +5,7 @@
 #include "conn/connection.h"
 #include "player.h"
 #include "board.h"
-#include "timers/vtimer.h"
+#include "timers/timer.h"
 
 
 int main() {
@@ -30,8 +30,8 @@ int main() {
         loadPlayer(window.gWindow, window.gRenderer, &player);
 
         // Initialize Velocity Timer
-        VTimer vTimer;
-        initVTimer(&vTimer);
+        Timer vTimer;
+        initTimer(&vTimer);
 
         // Event handler
         SDL_Event e;
@@ -57,14 +57,14 @@ int main() {
             }
 
             // Calculate time step -> ms -> s
-            double timeStep = getTicksVTimer(&vTimer) / 1000.f;
+            double timeStep = getTicksTimer(&vTimer) / 1000.f;
 
             // Moving player
             movePlayer(&player, &board, timeStep);
             //moving(&player);
 
             // Restart step timer / velocity timer
-            startVTimer(&vTimer);
+            startTimer(&vTimer);
 
             // Clearing renderer
             SDL_RenderClear(window.gRenderer);

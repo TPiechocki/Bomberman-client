@@ -13,6 +13,15 @@
 #include <string.h>
 #include <unistd.h>
 
+typedef struct connection_manager_struct{
+    int socket_desc;
+    struct addrinfo hints;
+    struct addrinfo *p;
+}Connection;
+
+void initSocket(Connection* conn);
+
+
 // add argument to pass port number for TCP connection
 void test_connection();
 

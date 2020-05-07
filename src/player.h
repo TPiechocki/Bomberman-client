@@ -18,6 +18,9 @@ typedef struct Player
     double x;
     double y;
     int current_tile;
+    int counter;
+    int placedBomb;
+    int onBomb;
     double velocity;
     double velX;
     double velY;

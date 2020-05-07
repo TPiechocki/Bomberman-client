@@ -4,6 +4,11 @@
 
 #include "connection.h"
 
+void initSocket(Connection *conn) {
+    memset(&conn->hints, 0, sizeof(conn->hints));
+}
+
+
 void test_connection(){
     int socket_desc;
     struct addrinfo hints, *infoptr, *p;
