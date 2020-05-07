@@ -17,6 +17,13 @@ int main() {
         fprintf(stderr, "Error in init.");
     }
     else {
+        // Initialize connection to server
+        Connection conn;
+        initConnection(&conn, "Kacper", "14938"); // name and port as user input
+        connectServer(&conn);
+        while (conn.connectionEstablished == 0); // wait for connection
+        sendName(&conn);
+
         // Initialize Board data
         Board board;
         initBoard(&board, window.gWindow);
@@ -33,6 +40,10 @@ int main() {
         Timer vTimer;
         initTimer(&vTimer);
 
+        Timer moveTimer;
+        initTimer(&moveTimer);
+        startTimer(&moveTimer);
+
         // Event handler
         SDL_Event e;
         while (window.run) {
@@ -40,28 +51,32 @@ int main() {
             while (SDL_PollEvent(&e) != 0){
 
                 switch (e.type) {
-                    /*case SDL_KEYDOWN:
-                        changeMove(&player, e);
-                        break;
-                    case SDL_KEYUP:
-                        brake(&player, e);
-                        break;*/
                     // User request quit
                     case SDL_QUIT:
                         window.run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&player, &e);
+                        handlePlayerEvent(&player, &e, &conn);
                         break;
                 }
             }
 
             // Calculate time step -> ms -> s
             double timeStep = getTicksTimer(&vTimer) / 1000.f;
-
+            int stepX = (int)player.x;
+            int stepY = (int)player.y;
             // Moving player
             movePlayer(&player, &board, timeStep);
-            //moving(&player);
+            stepX -= (int)player.x;
+            stepY -= (int)player.y;
+            if(stepX != 0 || stepY != 0){
+                // player moved, send to server
+                // send not more often than 50 ms
+                if(getTicksTimer(&moveTimer) >= 50.f) {
+                    sendPlayerData(&conn, (int) player.x, (int) player.y, &player.counter);
+                    startTimer(&moveTimer);
+                }
+            }
 
             // Restart step timer / velocity timer
             startTimer(&vTimer);
@@ -81,6 +96,8 @@ int main() {
         // Freeing resources for rendered elements
         closeBoard(&board);
         closePlayer(&player);
+        closeConnection(&conn);
+        closeSocket(&conn);
     }
     //test_connection();
 

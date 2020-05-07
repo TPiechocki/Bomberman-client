@@ -32,15 +32,12 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
         printf("Blad przy wczytywaniu plikow!");
         return;
     }
-    int windowWidth;
-    int windowHeight;
-    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
     p->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 }
 
-void handlePlayerEvent(Player *player, SDL_Event *e) {
+void handlePlayerEvent(Player *player, SDL_Event *e, Connection* conn) {
     // If key was pressed
     if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
         // Adjust velocity (start moving)
@@ -68,6 +65,7 @@ void handlePlayerEvent(Player *player, SDL_Event *e) {
             case SDLK_a: player->velX += player->velocity; break;
             case SDLK_d: player->velX -= player->velocity; break;
         }
+        sendPlayerData(conn, (int)player->x, (int)player->y, &player->counter);
     }
 }
 

@@ -21,8 +21,8 @@ typedef struct bomb_struct{
 }Bomb;
 
 void initBomb(Bomb* bomb);
-void loadBomb(Bomb* bomb);
+void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
 
-void close(Bomb* bomb);
+void closeBomb(Bomb* bomb);
 
 #endif //BOMBERMAN_CLIENT_BOMB_H
