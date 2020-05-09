@@ -13,6 +13,7 @@ void initPlayer(Player *player, Board *board) {
     player->counter = 0;
     player->onBomb = 0;
     player->placedBomb = 0;
+    player->bomb = NULL;
 
     player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
@@ -37,7 +38,7 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
     SDL_FreeSurface(surface);
 }
 
-void handlePlayerEvent(Player *player, SDL_Event *e, Connection* conn) {
+void handlePlayerEvent(Player *player, SDL_Event *e, SDL_Renderer *renderer, Board *board, Connection* conn) {
     // If key was pressed
     if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
         // Adjust velocity (start moving)
@@ -50,7 +51,7 @@ void handlePlayerEvent(Player *player, SDL_Event *e, Connection* conn) {
             case SDLK_s: player->velY += player->velocity; break;
             case SDLK_a: player->velX -= player->velocity; break;
             case SDLK_d: player->velX += player->velocity; break;
-            case SDLK_SPACE: break;
+            case SDLK_SPACE: placeBombPlayer(player, renderer, board); break;
         }
     }
     else if( e->type == SDL_KEYUP && e->key.repeat == 0){
@@ -154,6 +155,46 @@ void movePlayer(Player* player, Board* board, double timeStep){
                 player->y = temp[1][1];
         }
     }
+    // check if player went out of bomb
+    if(player->placedBomb && !SDL_HasIntersection(&collide, &player->bomb->bombRect))
+        player->onBomb = 0;
+    // collision with bomb
+    if(player->placedBomb && !player->onBomb && SDL_HasIntersection(&collide, &player->bomb->bombRect))
+    {
+        double temp[2][2];
+        for (int j = 0; j < 2; ++j) {
+            temp[j][0] = 0.0f;
+        }
+
+        // player coordinates point to the center, but coordinates of block point to upper left corner
+
+        // player is on the left side of the block
+        if(player->x >= player->bomb->bombRect.x - player->image.w / 2 && player->velX > 0.0f) {
+            temp[0][0] = fabs(player->x - (player->bomb->bombRect.x - player->image.w / 2));
+            temp[0][1] = player->bomb->bombRect.x - player->image.w / 2;
+        }
+        // player is on the right side of the block
+        if(player->x <= player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2 && player->velX < 0.0f) {
+            temp[0][0] = fabs(player->x - (player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2));
+            temp[0][1] = player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2;
+        }
+        // player above the block
+        if(player->y >= player->bomb->bombRect.y - player->image.h / 2 && player->velY > 0.0f) {
+            temp[1][0] = fabs(player->y - (player->bomb->bombRect.y - player->image.h / 2));
+            temp[1][1] = player->bomb->bombRect.y- player->image.h / 2;
+        }
+        // player below the block
+        if(player->y <= player->bomb->bombRect.y + player->bomb->bombRect.w + player->image.w / 2 && player->velY < 0.0f) {
+            temp[1][0] = fabs(player->y - (player->bomb->bombRect.y+ player->bomb->bombRect.w + player->image.w / 2));
+            temp[1][1] = player->bomb->bombRect.y + player->bomb->bombRect.h + player->image.h / 2;
+        }
+
+        // choose collision with smaller delta and use proper callback
+        if (temp[1][0] == 0 || (temp[0][0] != 0 && temp[0][0] <= temp[1][0]))
+            player->x = temp[0][1];
+        else
+            player->y = temp[1][1];
+    }
 
     // assign new coords if they didn't go out of bounds
     player->image.x = (int)player->x - player->image.w / 2;
@@ -181,7 +222,42 @@ void movePlayer(Player* player, Board* board, double timeStep){
 }
 
 void renderPlayer(Player *player, SDL_Renderer *renderer) {
+    //render player and bomb/ explosion if it exists
     SDL_RenderCopy(renderer, player->texture, NULL, &player->image);
+    if(player->placedBomb)
+        renderBomb(player->bomb, renderer);
+    if(player->bomb != NULL && player->bomb->exploded)
+        renderExplosion(player->bomb, renderer);
+}
+
+void placeBombPlayer(Player* player, SDL_Renderer *renderer, Board *board){
+    //place bomb in middle of current tile
+    if (!player->placedBomb){
+        player->placedBomb = 1;
+        player->onBomb = 1;
+        player->bomb = (Bomb *) malloc(sizeof(Bomb));
+        initBomb(player->bomb);
+        loadBomb(player->bomb, renderer, board, player->current_tile);
+    }
+}
+
+void checkBombs(Player* player, Board* board){
+    // check if bomb should explode or be destroyed after explosion
+    if(player->bomb != NULL){
+        //Explode
+        if(getTicksTimer(player->bomb->timer) >= 2000){
+            if(!player->bomb->exploded)
+                explode(player->bomb, board);
+        }
+        //Destroy bomb
+        if(getTicksTimer(player->bomb->timer) >= 3000){
+            player->onBomb = 0;
+            player->placedBomb = 0;
+            closeBomb(player->bomb);
+            free(player->bomb);
+            player->bomb = NULL;
+        }
+    }
 }
 
 void closePlayer(Player *player) {

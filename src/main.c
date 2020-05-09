@@ -19,10 +19,10 @@ int main() {
     else {
         // Initialize connection to server
         Connection conn;
-        initConnection(&conn, "Kacper", "14938"); // name and port as user input
+        /*initConnection(&conn, "Kacper", "14938"); // name and port as user input
         connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
-        sendName(&conn);
+        sendName(&conn);*/
 
         // Initialize Board data
         Board board;
@@ -56,7 +56,7 @@ int main() {
                         window.run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&player, &e, &conn);
+                        handlePlayerEvent(&player, &e, window.gRenderer, &board, &conn);
                         break;
                 }
             }
@@ -77,12 +77,14 @@ int main() {
                     startTimer(&moveTimer);
                 }
             }
-
             // Restart step timer / velocity timer
             startTimer(&vTimer);
 
             // Clearing renderer
             SDL_RenderClear(window.gRenderer);
+
+            // Check if bomb should explode
+            checkBombs(&player, &board);
 
             // Render board
             renderBoard(window.gRenderer, &board);

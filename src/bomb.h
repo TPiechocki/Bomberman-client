@@ -8,9 +8,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "timers/timer.h"
+#include "board.h"
 
 typedef struct bomb_struct{
   int tile;
+  int exploded;
   int range;
   int placed;
   Timer* timer;
@@ -21,8 +23,12 @@ typedef struct bomb_struct{
 }Bomb;
 
 void initBomb(Bomb* bomb);
-void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
+void loadBomb(Bomb* bomb, SDL_Renderer* renderer, Board* board, int tile);
 
+void explode(Bomb* bomb, Board* board);
+
+void renderBomb(Bomb* bomb, SDL_Renderer* renderer);
+void renderExplosion(Bomb* bomb, SDL_Renderer* renderer);
 void closeBomb(Bomb* bomb);
 
 #endif //BOMBERMAN_CLIENT_BOMB_H

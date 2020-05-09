@@ -5,17 +5,19 @@
 #ifndef BOMBERMAN_CLIENT_PLAYER_H
 #define BOMBERMAN_CLIENT_PLAYER_H
 
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "board.h"
 #include "conn/connection.h"
+#include "bomb.h"
 
 #define PLAYER_SPRITE_PATH "./../sprites/Green_square.png"
-
 typedef struct Player
 {
     SDL_Texture *texture;
     SDL_Rect image;
+    Bomb* bomb;
     double x;
     double y;
     int current_tile;
@@ -31,10 +33,11 @@ void initPlayer(Player* player, Board* board);
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Loading player texture
 
-void handlePlayerEvent(Player* player, SDL_Event* e, Connection* conn);
+void handlePlayerEvent(Player* player, SDL_Event* e, SDL_Renderer *renderer, Board *board, Connection* conn);
 void movePlayer(Player* player, Board* board, double timeStep);
 
-void placeBombPlayer(Player* player);
+void placeBombPlayer(Player* player, SDL_Renderer *renderer, Board *board);
+void checkBombs(Player* player, Board* board);
 
 void renderPlayer(Player* player, SDL_Renderer* renderer);
 
