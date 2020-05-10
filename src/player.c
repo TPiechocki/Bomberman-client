@@ -155,35 +155,87 @@ void movePlayer(Player* player, Board* board, double timeStep){
                 player->y = temp[1][1];
         }
     }
+
+    // check collisions with breakable ice walls
+    for( int i  = 0; i < board->breakableIceBlocksCount; i++){
+        if(!SDL_HasIntersection(&collide, board->breakableIceBlocks[i]))
+            // no collision happened with ice block
+            continue;
+        else{
+            // collision happened with ice wall
+            /*
+            TEMP[i][j] - j:             0                                   1
+                    i = 0:      x collision delta                   x callback position
+                    i = 1:      y collision delta                   y callback position
+
+            collision delta means how deep is the collision
+            it is needed to ignore the unwanted dimension when user try to move in both dimensions
+
+            callback position is the position to use if this collision should revert the movement
+            */
+            double temp[2][2];
+            for (int j = 0; j < 2; ++j) {
+                temp[j][0] = 0.0f;
+            }
+
+            // player coordinates point to the center, but coordinates of block point to upper left corner
+
+            // player is on the left side of the block
+            if(player->x >= board->breakableIceBlocks[i]->x - player->image.w / 2 && player->velX > 0.0f) {
+                temp[0][0] = fabs(player->x - (board->breakableIceBlocks[i]->x - player->image.w / 2));
+                temp[0][1] = board->breakableIceBlocks[i]->x - player->image.w / 2;
+            }
+            // player is on the right side of the block
+            if(player->x <= board->breakableIceBlocks[i]->x + board->breakableIceBlocks[i]->w + player->image.w / 2 && player->velX < 0.0f) {
+                temp[0][0] = fabs(player->x - (board->breakableIceBlocks[i]->x + board->breakableIceBlocks[i]->w + player->image.w / 2));
+                temp[0][1] = board->breakableIceBlocks[i]->x + board->breakableIceBlocks[i]->w + player->image.w / 2;
+            }
+            // player above the block
+            if(player->y >= board->breakableIceBlocks[i]->y - player->image.h / 2 && player->velY > 0.0f) {
+                temp[1][0] = fabs(player->y - (board->breakableIceBlocks[i]->y - player->image.h / 2));
+                temp[1][1] = board->breakableIceBlocks[i]->y - player->image.h / 2;
+            }
+            // player below the block
+            if(player->y <= board->breakableIceBlocks[i]->y + board->breakableIceBlocks[i]->w + player->image.w / 2 && player->velY < 0.0f) {
+                temp[1][0] = fabs(player->y - (board->breakableIceBlocks[i]->y + board->breakableIceBlocks[i]->w + player->image.w / 2));
+                temp[1][1] = board->breakableIceBlocks[i]->y + board->breakableIceBlocks[i]->h + player->image.h / 2;
+            }
+
+            // choose collision with smaller delta and use proper callback
+            if (temp[1][0] == 0 || (temp[0][0] != 0 && temp[0][0] <= temp[1][0]))
+                player->x = temp[0][1];
+            else
+                player->y = temp[1][1];
+        }
+    }
+
     // check if player went out of bomb
     if(player->placedBomb && !SDL_HasIntersection(&collide, &player->bomb->bombRect))
         player->onBomb = 0;
+
     // collision with bomb
-    if(player->placedBomb && !player->onBomb && SDL_HasIntersection(&collide, &player->bomb->bombRect))
-    {
+    if(player->placedBomb && !player->onBomb && SDL_HasIntersection(&collide, &player->bomb->bombRect)){
         double temp[2][2];
         for (int j = 0; j < 2; ++j) {
             temp[j][0] = 0.0f;
         }
 
-        // player coordinates point to the center, but coordinates of block point to upper left corner
-
-        // player is on the left side of the block
+        // player is on the left side of the bomb
         if(player->x >= player->bomb->bombRect.x - player->image.w / 2 && player->velX > 0.0f) {
             temp[0][0] = fabs(player->x - (player->bomb->bombRect.x - player->image.w / 2));
             temp[0][1] = player->bomb->bombRect.x - player->image.w / 2;
         }
-        // player is on the right side of the block
+        // player is on the right side of the bomb
         if(player->x <= player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2 && player->velX < 0.0f) {
             temp[0][0] = fabs(player->x - (player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2));
             temp[0][1] = player->bomb->bombRect.x + player->bomb->bombRect.w + player->image.w / 2;
         }
-        // player above the block
+        // player above the bomb
         if(player->y >= player->bomb->bombRect.y - player->image.h / 2 && player->velY > 0.0f) {
             temp[1][0] = fabs(player->y - (player->bomb->bombRect.y - player->image.h / 2));
             temp[1][1] = player->bomb->bombRect.y- player->image.h / 2;
         }
-        // player below the block
+        // player below the bomb
         if(player->y <= player->bomb->bombRect.y + player->bomb->bombRect.w + player->image.w / 2 && player->velY < 0.0f) {
             temp[1][0] = fabs(player->y - (player->bomb->bombRect.y+ player->bomb->bombRect.w + player->image.w / 2));
             temp[1][1] = player->bomb->bombRect.y + player->bomb->bombRect.h + player->image.h / 2;

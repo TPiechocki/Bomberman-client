@@ -87,9 +87,19 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        //right side collide with breakable ice block - destroying it
+        for(int j = 0; j < board->breakableIceBlocksCount; j++){
+            if(SDL_HasIntersection(&right, board->breakableIceBlocks[j])){
+                collision = 1;
+                destroyBreakableIceBlock(board, j);
+                break;
+            }
+        }
+        if (collision)
+            break;
     }
-    collision = 0;
 
+    collision = 0;
     for(int i = 0; i < bomb->range; i++){
         down.h += board->tile_length;
         //down side collide with outside wall
@@ -112,9 +122,19 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        //down side collide with breakable ice block - destroying it
+        for(int j = 0; j < board->breakableIceBlocksCount; j++){
+            if(SDL_HasIntersection(&down, board->breakableIceBlocks[j])){
+                collision = 1;
+                destroyBreakableIceBlock(board, j);
+                break;
+            }
+        }
+        if (collision)
+            break;
     }
-    collision = 0;
 
+    collision = 0;
     for(int i = 0; i < bomb->range; i++){
         up.y -= board->tile_length;
         up.h += board->tile_length;
@@ -135,6 +155,16 @@ void explode(Bomb* bomb, Board* board){
                 up.y += board->tile_length;
                 up.h -= board->tile_length;
                 collision = 1;
+                break;
+            }
+        }
+        if (collision)
+            break;
+        //upper side collide with breakable ice block - destroying it
+        for(int j = 0; j < board->breakableIceBlocksCount; j++){
+            if(SDL_HasIntersection(&up, board->breakableIceBlocks[j])){
+                collision = 1;
+                destroyBreakableIceBlock(board, j);
                 break;
             }
         }
@@ -163,6 +193,16 @@ void explode(Bomb* bomb, Board* board){
                 left.x += board->tile_length;
                 left.w -= board->tile_length;
                 collision = 1;
+                break;
+            }
+        }
+        if (collision)
+            break;
+        //right side collide with breakable ice block - destroying it
+        for(int j = 0; j < board->breakableIceBlocksCount; j++){
+            if(SDL_HasIntersection(&left, board->breakableIceBlocks[j])){
+                collision = 1;
+                destroyBreakableIceBlock(board, j);
                 break;
             }
         }

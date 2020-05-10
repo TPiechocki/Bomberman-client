@@ -10,6 +10,7 @@
 
 #define OUTSIDE_WALL_SPRITE_PATH "./../sprites/Wall.png"
 #define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
+#define BREAKABLE_ICE_BLOCK_SPRITE_PATH "./../sprites/Breakable_ice_block.jpg"
 
 typedef struct Board{
     int start_x;
@@ -21,9 +22,12 @@ typedef struct Board{
     int tile_length;
     SDL_Texture *outsideWallTexture;
     SDL_Texture *iceBlockTexture;
+    SDL_Texture *breakableIceBlockTexture;
     SDL_Rect outsideWalls[4];
     SDL_Rect iceBlocks[25];
+    SDL_Rect *breakableIceBlocks[90];
     int iceBlocksCount;
+    int breakableIceBlocksCount;
 } Board;
 
 void initBoard(Board* board, SDL_Window* window);
@@ -35,6 +39,8 @@ void renderBoard(SDL_Renderer* renderer, Board* board);
 void renderOutsideWalls(Board* board, SDL_Renderer* renderer);
 void renderChessBoard(SDL_Renderer* renderer, Board* board);
 void renderIceBlocks(SDL_Renderer* renderer, Board* board);
+
+void destroyBreakableIceBlock(Board* board, int index);
 
 void closeBoard(Board* board);
 
