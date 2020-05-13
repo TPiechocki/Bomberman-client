@@ -8,19 +8,23 @@
 #include "timers/timer.h"
 
 
-int main() {
+int main(int argc, char* argv[]) {
+    if(argc < 3) {
+        fprintf(stderr, "Missing player name and/or port number\n");
+        return -1;
+    }
     // Initialize window struct
     Window window;
     window.run = SDL_TRUE;
     // Initialize window
     if(init(&window) < 0){
-        fprintf(stderr, "Error in init.");
+        fprintf(stderr, "Error in window init.\n");
     }
     else {
         // Initialize connection to server
         Connection conn;
-        /*initConnection(&conn, "Kacper", "14938"); // name and port as user input
-        connectServer(&conn);
+        initConnection(&conn, argv[1], argv[2]); // name and port as user input
+        /*connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
         sendName(&conn);*/
 
@@ -98,11 +102,9 @@ int main() {
         // Freeing resources for rendered elements
         closeBoard(&board);
         closePlayer(&player);
-        closeConnection(&conn);
-        closeSocket(&conn);
+        //closeConnection(&conn);
+        //closeSocket(&conn);
     }
-    //test_connection();
-
     // Free resources and close SDL
     close_window(&window);
 
