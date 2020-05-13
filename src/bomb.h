@@ -17,9 +17,12 @@ typedef struct bomb_struct{
   int placed;
   Timer* timer;
   SDL_Texture* bombTexture;
-  SDL_Texture* explosionTexture;
+  SDL_Texture* explVerTexture;
+  SDL_Texture* explHorTexture;
+  SDL_Texture* centerTexture;
   SDL_Rect bombRect;
   SDL_Rect explosionRect[4];
+  SDL_Rect centerRect;
 }Bomb;
 
 void initBomb(Bomb* bomb);

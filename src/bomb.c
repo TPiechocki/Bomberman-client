@@ -15,8 +15,10 @@ void initBomb(Bomb *bomb) {
 
 void loadBomb(Bomb *bomb, SDL_Renderer* renderer, Board* board, int tile) {
     SDL_Surface* bombSurface = IMG_Load("./../sprites/Black_square.png");
-    SDL_Surface* exploSurface = IMG_Load("./../sprites/Explosion.jpg");
-    if(bombSurface == NULL || exploSurface == NULL){
+    SDL_Surface* exploHorSurface = IMG_Load("./../sprites/beam_hor.png");
+    SDL_Surface* exploVerSurface = IMG_Load("./../sprites/beam_ver.png");
+    SDL_Surface* centerSurface = IMG_Load("./../sprites/beam_center.png");
+    if(bombSurface == NULL || exploHorSurface == NULL || exploVerSurface == NULL || centerSurface == NULL){
         fprintf(stderr, "Failed to load bomb sprites.\n");
         return;
     }
@@ -24,8 +26,18 @@ void loadBomb(Bomb *bomb, SDL_Renderer* renderer, Board* board, int tile) {
     if(bomb->bombTexture == NULL)
         fprintf(stderr,"%s", SDL_GetError());
     SDL_FreeSurface(bombSurface);
-    bomb->explosionTexture = SDL_CreateTextureFromSurface(renderer, exploSurface);
-    SDL_FreeSurface(exploSurface);
+    bomb->explHorTexture = SDL_CreateTextureFromSurface(renderer, exploHorSurface);
+    if(bomb->explHorTexture == NULL)
+        fprintf(stderr,"%s", SDL_GetError());
+    SDL_FreeSurface(exploHorSurface);
+    bomb->explVerTexture = SDL_CreateTextureFromSurface(renderer, exploVerSurface);
+    if(bomb->explVerTexture == NULL)
+        fprintf(stderr,"%s", SDL_GetError());
+    SDL_FreeSurface(exploVerSurface);
+    bomb->centerTexture = SDL_CreateTextureFromSurface(renderer, centerSurface);
+    if(bomb->centerTexture == NULL)
+        fprintf(stderr,"%s", SDL_GetError());
+    SDL_FreeSurface(centerSurface);
 
     bomb->placed = 1;
     bomb->tile = tile;
@@ -44,29 +56,28 @@ void explode(Bomb* bomb, Board* board){
     SDL_Rect up;
     SDL_Rect down;
     int collision = 0;
-    right.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
+    right.x = (bomb->tile % board->size) * board->tile_length + board->start_x + board->tile_length;
     right.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
     right.w = board->tile_length;
     right.h = board->tile_length;
 
     down.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
-    down.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
+    down.y = (bomb->tile / board->size) * board->tile_length + board->start_y + board->tile_length;
     down.w = board->tile_length;
     down.h = board->tile_length;
 
-    left.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
+    left.x = (bomb->tile % board->size) * board->tile_length + board->start_x - board->tile_length;
     left.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
     left.w = board->tile_length;
     left.h = board->tile_length;
 
     up.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
-    up.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
+    up.y = (bomb->tile / board->size) * board->tile_length + board->start_y - board->tile_length;
     up.w = board->tile_length;
     up.h = board->tile_length;
 
 
     for(int i = 0; i < bomb->range; i++){
-        right.w += board->tile_length;
         //right side collide with outside wall
         for(int j = 0; j < 4; j++){
             if(SDL_HasIntersection(&right, &board->outsideWalls[j])){
@@ -97,11 +108,12 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        if(right.w < board->tile_length * bomb->range)
+            right.w += board->tile_length;
     }
 
     collision = 0;
     for(int i = 0; i < bomb->range; i++){
-        down.h += board->tile_length;
         //down side collide with outside wall
         for(int j = 0; j < 4; j++){
             if(SDL_HasIntersection(&down, &board->outsideWalls[j])){
@@ -132,12 +144,12 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        if(down.h < board->tile_length * bomb->range)
+            down.h += board->tile_length;
     }
 
     collision = 0;
     for(int i = 0; i < bomb->range; i++){
-        up.y -= board->tile_length;
-        up.h += board->tile_length;
         //upper side collide with outside wall
         for(int j = 0; j < 4; j++){
             if(SDL_HasIntersection(&up, &board->outsideWalls[j])){
@@ -170,12 +182,14 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        if(up.h < board->tile_length * bomb->range){
+            up.y -= board->tile_length;
+            up.h += board->tile_length;
+        }
     }
 
     collision = 0;
     for(int i = 0; i < bomb->range; i++){
-        left.x -= board->tile_length;
-        left.w += board->tile_length;
         //left side collide with outside wall
         for(int j = 0; j < 4; j++){
             if(SDL_HasIntersection(&left, &board->outsideWalls[j])){
@@ -208,13 +222,23 @@ void explode(Bomb* bomb, Board* board){
         }
         if (collision)
             break;
+        if(left.w < board->tile_length * bomb->range){
+            left.x -= board->tile_length;
+            left.w += board->tile_length;
+        }
     }
 
-    bomb->explosionRect[0] = right;
-    bomb->explosionRect[1] = left;
-    bomb->explosionRect[2] = up;
-    bomb->explosionRect[3] = down;
+    // clockwise
+    bomb->explosionRect[0] = up;
+    bomb->explosionRect[1] = right;
+    bomb->explosionRect[2] = down;
+    bomb->explosionRect[3] = left;
     bomb->exploded = 1;
+
+    bomb->centerRect.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
+    bomb->centerRect.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
+    bomb->centerRect.w = board->tile_length;
+    bomb->centerRect.h = board->tile_length;
 }
 
 void renderBomb(Bomb* bomb, SDL_Renderer* renderer)
@@ -224,13 +248,20 @@ void renderBomb(Bomb* bomb, SDL_Renderer* renderer)
 
 void renderExplosion(Bomb* bomb, SDL_Renderer* renderer)
 {
-    for(int i = 0; i < 4; i++)
-        SDL_RenderCopy(renderer, bomb->explosionTexture, NULL, &bomb->explosionRect[i]);
+    for(int i = 0; i < 4; i++) {
+        if(i % 2 == 0) // vertical
+            SDL_RenderCopy(renderer, bomb->explVerTexture, NULL, &bomb->explosionRect[i]);
+        else // horizontal
+            SDL_RenderCopy(renderer, bomb->explHorTexture, NULL, &bomb->explosionRect[i]);
+    }
+    SDL_RenderCopy(renderer, bomb->centerTexture, NULL, &bomb->centerRect);
 }
 
 void closeBomb(Bomb *bomb) {
     SDL_DestroyTexture(bomb->bombTexture);
-    SDL_DestroyTexture(bomb->explosionTexture);
+    SDL_DestroyTexture(bomb->explHorTexture);
+    SDL_DestroyTexture(bomb->explVerTexture);
+    SDL_DestroyTexture(bomb->centerTexture);
     bomb->exploded = 0;
     free(bomb->timer);
 }

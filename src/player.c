@@ -163,16 +163,6 @@ void movePlayer(Player* player, Board* board, double timeStep){
             continue;
         else{
             // collision happened with ice wall
-            /*
-            TEMP[i][j] - j:             0                                   1
-                    i = 0:      x collision delta                   x callback position
-                    i = 1:      y collision delta                   y callback position
-
-            collision delta means how deep is the collision
-            it is needed to ignore the unwanted dimension when user try to move in both dimensions
-
-            callback position is the position to use if this collision should revert the movement
-            */
             double temp[2][2];
             for (int j = 0; j < 2; ++j) {
                 temp[j][0] = 0.0f;
@@ -251,23 +241,6 @@ void movePlayer(Player* player, Board* board, double timeStep){
     // assign new coords if they didn't go out of bounds
     player->image.x = (int)player->x - player->image.w / 2;
     player->image.y = (int)player->y - player->image.h / 2;
-
-    // Check if it didn't go out of bounds
-    /*if(player->x - player->image.h / 2 < board->start_x)
-        player->x = board->start_x + player->image.w / 2; // move to the left edge if going out of bounds
-    else if(player->x + player->image.w / 2 > board->end_x + 1)
-        player->x = board->end_x - player->image.w / 2; // move to the right edge if going out of bounds
-    else
-        player->image.x = (int)player->x - player->image.w / 2; // assign new coord if they didn't
-
-    // Check if it didn't go out of bounds
-    if(player->y - player->image.h / 2 < board->start_y)
-        player->y = board->start_y + player->image.h / 2; // move to the top edge if going out of bounds
-    else if (player->y + player->image.h / 2 > board->end_y + 1)
-        player->y = board->end_y - player->image.h / 2; // move to the bottom edge if going out of bounds
-    else
-        player->image.y = (int)player->y - player->image.h / 2; // assign new coord if they didn't go out of bounds
-    */
 
     player->current_tile = ((int)(player->y - board->start_y) / board->tile_length) * board->size
                            + ((player->x - board->start_x) / board->tile_length);
