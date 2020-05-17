@@ -42,7 +42,7 @@ void *communication(void *args) {
     Connection *conn = (Connection *) args;
     // get possible IPs of server
     while (conn->closeConnection == 0) {
-        int result = getaddrinfo("0.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
+        int result = getaddrinfo("2.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         }
@@ -100,7 +100,7 @@ void *communication(void *args) {
 void sendName(Connection *conn) {
     if (conn->connectionEstablished == 1) {
         char buffer[100];
-        sprintf(buffer, "%s\n", conn->name);
+        sprintf(buffer, "%s", conn->name);
         send(conn->socket, buffer, strlen(buffer), 0);
     }
 }
