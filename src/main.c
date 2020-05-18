@@ -5,6 +5,7 @@
 #include "conn/connection.h"
 #include "player.h"
 #include "board.h"
+#include "bomb.h"
 #include "timers/timer.h"
 
 
@@ -40,6 +41,11 @@ int main(int argc, char* argv[]) {
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer, &player);
 
+        Bomb playerBomb;
+        initBomb(&playerBomb);
+        // Loading bomb data
+        loadBomb(&playerBomb, window.gRenderer);
+
         // Initialize Velocity Timer
         Timer vTimer;
         initTimer(&vTimer);
@@ -60,7 +66,7 @@ int main(int argc, char* argv[]) {
                         window.run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&player, &e, window.gRenderer, &board, &conn);
+                        handlePlayerEvent(&player, &e, window.gRenderer, &board, &conn, &playerBomb);
                         break;
                 }
             }
@@ -70,7 +76,7 @@ int main(int argc, char* argv[]) {
             int stepX = (int)player.x;
             int stepY = (int)player.y;
             // Moving player
-            movePlayer(&player, &board, timeStep);
+            movePlayer(&player, &board, &playerBomb, timeStep);
             stepX -= (int)player.x;
             stepY -= (int)player.y;
             if(stepX != 0 || stepY != 0){
@@ -87,11 +93,16 @@ int main(int argc, char* argv[]) {
             // Clearing renderer
             SDL_RenderClear(window.gRenderer);
 
-            // Check if bomb should explode
-            checkBombs(&player, &board);
-
             // Render board
             renderBoard(window.gRenderer, &board);
+
+            if(playerBomb.placed == 1)
+                renderBomb(&playerBomb, window.gRenderer);
+            checkForExplosion(&playerBomb, &board);
+            if(playerBomb.exploded == 1)
+                renderExplosion(&playerBomb, window.gRenderer);
+            if(playerBomb.exploded == 1 && getTicksTimer(playerBomb.timer) >= 2000.f)
+                hideBomb(&playerBomb);
 
             // Render player
             renderPlayer(&player, window.gRenderer);
@@ -102,6 +113,7 @@ int main(int argc, char* argv[]) {
         // Freeing resources for rendered elements
         closeBoard(&board);
         closePlayer(&player);
+        closeBomb(&playerBomb);
         //closeConnection(&conn);
         //closeSocket(&conn);
     }

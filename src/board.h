@@ -12,7 +12,7 @@
 #define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
 #define BREAKABLE_ICE_BLOCK_SPRITE_PATH "./../sprites/Breakable_ice_block.jpg"
 
-typedef struct Board{
+typedef struct board_struct{
     int start_x;
     int start_y;
     int end_x;
@@ -28,6 +28,8 @@ typedef struct Board{
     SDL_Rect *breakableIceBlocks[90];
     int iceBlocksCount;
     int breakableIceBlocksCount;
+    int player_count; // bomb count = player count
+    int* bombs_placed;
 } Board;
 
 void initBoard(Board* board, SDL_Window* window);

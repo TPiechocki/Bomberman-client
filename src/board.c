@@ -22,6 +22,7 @@ void initBoard(Board* board, SDL_Window* window){
     board->tile_length = board->length / board->size;
     board->iceBlocksCount = 25;
     board->breakableIceBlocksCount = 90;
+    board->player_count = 1;
 
     for(int i = 0; i < board->breakableIceBlocksCount; i++)
         board->breakableIceBlocks[i] = (SDL_Rect*)malloc(sizeof(SDL_Rect));

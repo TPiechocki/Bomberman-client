@@ -13,7 +13,7 @@ void initBomb(Bomb *bomb) {
     initTimer(bomb->timer);
 }
 
-void loadBomb(Bomb *bomb, SDL_Renderer* renderer, Board* board, int tile) {
+void loadBomb(Bomb *bomb, SDL_Renderer* renderer) {
     SDL_Surface* bombSurface = IMG_Load("./../sprites/Black_square.png");
     SDL_Surface* exploHorSurface = IMG_Load("./../sprites/beam_hor.png");
     SDL_Surface* exploVerSurface = IMG_Load("./../sprites/beam_ver.png");
@@ -38,7 +38,9 @@ void loadBomb(Bomb *bomb, SDL_Renderer* renderer, Board* board, int tile) {
     if(bomb->centerTexture == NULL)
         fprintf(stderr,"%s", SDL_GetError());
     SDL_FreeSurface(centerSurface);
+}
 
+void placeBomb(Bomb *bomb, Board* board, int tile) {
     bomb->placed = 1;
     bomb->tile = tile;
 
@@ -47,6 +49,22 @@ void loadBomb(Bomb *bomb, SDL_Renderer* renderer, Board* board, int tile) {
     bomb->bombRect.x = (tile % board->size) * board->tile_length + board->start_x + board->tile_length / 4;
     bomb->bombRect.y = (tile / board->size) * board->tile_length + board->start_y + board->tile_length / 4;
     startTimer(bomb->timer);
+}
+
+void hideBomb(Bomb *bomb) {
+    bomb->placed = 0;
+    bomb->exploded = 0;
+    bomb->tile = -1;
+    bomb->bombRect.w = 0;
+    bomb->bombRect.h = 0;
+    stopTimer(bomb->timer);
+}
+
+void checkForExplosion(Bomb *bomb, Board* board) {
+    if(bomb->placed == 1 && getTicksTimer(bomb->timer) >= 1000.f && bomb->exploded == 0){
+        bomb->exploded = 1;
+        explode(bomb, board);
+    }
 }
 
 void explode(Bomb* bomb, Board* board){
@@ -233,7 +251,6 @@ void explode(Bomb* bomb, Board* board){
     bomb->explosionRect[1] = right;
     bomb->explosionRect[2] = down;
     bomb->explosionRect[3] = left;
-    bomb->exploded = 1;
 
     bomb->centerRect.x = (bomb->tile % board->size) * board->tile_length + board->start_x;
     bomb->centerRect.y = (bomb->tile / board->size) * board->tile_length + board->start_y;
@@ -262,6 +279,5 @@ void closeBomb(Bomb *bomb) {
     SDL_DestroyTexture(bomb->explHorTexture);
     SDL_DestroyTexture(bomb->explVerTexture);
     SDL_DestroyTexture(bomb->centerTexture);
-    bomb->exploded = 0;
     free(bomb->timer);
 }

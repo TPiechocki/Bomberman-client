@@ -12,9 +12,9 @@
 
 typedef struct bomb_struct{
   int tile;
-  int exploded;
   int range;
   int placed;
+  int exploded;
   Timer* timer;
   SDL_Texture* bombTexture;
   SDL_Texture* explVerTexture;
@@ -26,12 +26,16 @@ typedef struct bomb_struct{
 }Bomb;
 
 void initBomb(Bomb* bomb);
-void loadBomb(Bomb* bomb, SDL_Renderer* renderer, Board* board, int tile);
+void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
+void placeBomb(Bomb* bomb, Board* board, int tile);
+void hideBomb(Bomb* bomb);
 
+void checkForExplosion(Bomb* bomb, Board* board);
 void explode(Bomb* bomb, Board* board);
 
 void renderBomb(Bomb* bomb, SDL_Renderer* renderer);
 void renderExplosion(Bomb* bomb, SDL_Renderer* renderer);
+
 void closeBomb(Bomb* bomb);
 
 #endif //BOMBERMAN_CLIENT_BOMB_H
