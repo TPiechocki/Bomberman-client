@@ -251,9 +251,11 @@ void renderPlayer(Player *player, SDL_Renderer *renderer) {
 
 void placeBombPlayer(Player* player, Board *board, Bomb* bomb){
     // send to server message about bomb placement
-    placeBomb(bomb, board, player->current_tile);
-    player->placedBomb = 1;
-    player->onBomb = 1;
+    if(player->placedBomb == 0) {
+        placeBomb(bomb, board, player->current_tile);
+        player->placedBomb = 1;
+        player->onBomb = 1;
+    }
 }
 
 void closePlayer(Player *player) {

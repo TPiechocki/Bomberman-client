@@ -25,9 +25,9 @@ int main(int argc, char* argv[]) {
         // Initialize connection to server
         Connection conn;
         initConnection(&conn, argv[1], argv[2]); // name and port as user input
-        /*connectServer(&conn);
+        connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
-        sendName(&conn);*/
+        sendName(&conn);
 
         // Initialize Board data
         Board board;
@@ -101,8 +101,10 @@ int main(int argc, char* argv[]) {
             checkForExplosion(&playerBomb, &board);
             if(playerBomb.exploded == 1)
                 renderExplosion(&playerBomb, window.gRenderer);
-            if(playerBomb.exploded == 1 && getTicksTimer(playerBomb.timer) >= 2000.f)
+            if(playerBomb.exploded == 1 && getTicksTimer(playerBomb.timer) >= 2000.f) {
                 hideBomb(&playerBomb);
+                player.placedBomb = 0;
+            }
 
             // Render player
             renderPlayer(&player, window.gRenderer);
@@ -114,8 +116,8 @@ int main(int argc, char* argv[]) {
         closeBoard(&board);
         closePlayer(&player);
         closeBomb(&playerBomb);
-        //closeConnection(&conn);
-        //closeSocket(&conn);
+        closeConnection(&conn);
+        closeSocket(&conn);
     }
     // Free resources and close SDL
     close_window(&window);
