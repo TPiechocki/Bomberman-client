@@ -33,11 +33,9 @@ void* communication(void* args);
 
 void sendName(Connection* conn);
 void sendPlayerData(Connection* conn, int x, int y, unsigned int* action_counter);
+void sendBombEvent(Connection* conn, int tile);
 
 void closeConnection(Connection* conn);
 void closeSocket(Connection* conn);
-
-// add argument to pass port number for TCP connection
-//void test_connection();
 
 #endif //BOMBERMAN_CLIENT_CONNECTION_H

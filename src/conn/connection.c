@@ -66,25 +66,15 @@ void *communication(void *args) {
             fprintf(stderr, "Could not find the server!\n");
         }
         else {
-            /*if (connect(conn->socket, conn->p->ai_addr, conn->p->ai_addrlen) < 0) {
-                // connection lost, reset socket and retry
-                conn->connectionEstablished = 0;
-                sleep(2);
-                fprintf(stderr, "Connection to server lost, attempting to reconnect...\n");
-                close(conn->socket);
-                if ((conn->socket = socket(conn->p->ai_family, conn->p->ai_socktype, conn->p->ai_protocol)) == -1) {
-                    fprintf(stderr, "Socket creation error!");
-                    // call for app shutdown or ignore
-                    //return;
-                }
-            } else {*/
-            // receive info from socket
+
             conn->connectionEstablished = 1;
             fprintf(stdout, "Connection stable.\n");
 
-            //char *m = "Hello, World!\n";
-            while (conn->closeConnection == 0) {
-                sleep(1);
+            char buffer[1024];
+            // receive info from socket
+            while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
+                printf("%s\n", buffer);
+                memset(buffer, 0, sizeof(buffer));
             }
         }
         conn->connectionEstablished = 0;
@@ -115,6 +105,8 @@ void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter
         send(conn->socket, buffer2, strlen(buffer2), 0);
     }
 }
+
+
 
 void closeConnection(Connection *conn) {
     conn->closeConnection = 1;
