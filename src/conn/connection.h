@@ -30,10 +30,12 @@ void initConnection(Connection* conn, char* name, char* port);
 
 void connectServer(Connection* conn);
 void* communication(void* args);
+void decodeMessage(char* message);
 
 void sendName(Connection* conn);
 void sendPlayerData(Connection* conn, int x, int y, unsigned int* action_counter);
 void sendBombEvent(Connection* conn, int tile);
+
 
 void closeConnection(Connection* conn);
 void closeSocket(Connection* conn);

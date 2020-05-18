@@ -17,23 +17,6 @@ void initConnection(Connection *conn, char *name, char *port) {
     conn->connectionEstablished = 0;
 }
 
-/*
-void test_connection(){
-
-    char *m = "Hello, World!\n";
-    if( send(socket_desc, m, strlen(m), 0) < 0){
-        fprintf(stderr, "Send failed\n");
-        return;
-    }
-    puts("Sent!");
-    char rec[500];
-    if( recv(socket_desc, rec, 500, 0) < 0)
-        fprintf(stderr, "Recv failed\n");
-    puts("Reply received.");
-    puts(rec);
-
-}*/
-
 void connectServer(Connection *conn) {
     pthread_create(&conn->thread, NULL, communication, conn);
 }
@@ -70,6 +53,8 @@ void *communication(void *args) {
             conn->connectionEstablished = 1;
             fprintf(stdout, "Connection stable.\n");
 
+            sendName(conn);
+
             char buffer[1024];
             // receive info from socket
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
@@ -78,13 +63,19 @@ void *communication(void *args) {
             }
         }
         conn->connectionEstablished = 0;
-        if(conn->closeConnection == 0)
+        if(conn->closeConnection == 0) {
             fprintf(stderr, "Connection lost, attempting reconnect...\n");
-        else
-            fprintf(stdout, "Connection to server closed.");
+            //close(conn->socket);
+            sleep(5);
+        }
     }
+    fprintf(stdout, "Connection to server closed.");
     close(conn->socket);
     return NULL;
+}
+
+void decodeMessage(char *message) {
+
 }
 
 void sendName(Connection *conn) {
@@ -106,6 +97,15 @@ void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter
     }
 }
 
+void sendBombEvent(Connection *conn, int tile) {
+    if(conn->connectionEstablished == 1){
+        char buffer[100];
+        sprintf(buffer, "%s %d", conn->name, tile);
+        char buffer2[100];
+        sprintf(buffer2, "%d %s", strlen(buffer2), buffer2);
+        send(conn->socket, buffer2, strlen(buffer2), 0);
+    }
+}
 
 
 void closeConnection(Connection *conn) {

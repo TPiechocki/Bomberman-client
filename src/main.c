@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include "window.h"
 #include "conn/connection.h"
@@ -27,7 +26,6 @@ int main(int argc, char* argv[]) {
         initConnection(&conn, argv[1], argv[2]); // name and port as user input
         connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
-        sendName(&conn);
 
         // Initialize Board data
         Board board;
