@@ -14,6 +14,15 @@
 #include <unistd.h>
 #include <pthread.h>
 
+typedef enum Messages_ids{
+    move,
+    bomb,
+    name,
+    end,
+    start,
+    failure
+}MSG;
+
 typedef struct connection_manager_struct{
     int socket;
     int connectionEstablished;

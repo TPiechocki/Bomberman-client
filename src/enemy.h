@@ -14,21 +14,24 @@ typedef struct Enemy{
     SDL_Rect image;
     double x;
     double y;
-    double velocity;
-    double velX;
-    double velY;
-    int placedBomb;
-    int onBomb;
+    int nextX;
+    int nextY;
+    char* name;
+    //double velocity;
+    //double velX;
+    //double velY;
+    //int placedBomb;
+    //int onBomb;
 } Enemy;
 
-void initEnemy(Enemy* player, Board* board, int startX, int startY);
+void initEnemy(Enemy* enemy, Board* board, int startX, int startY, char* name);
 
 void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *p);
 
-void moveEnemy(Enemy* player, Board* board, Bomb* bombs, double timeStep);
+void moveEnemy(Enemy* enemy, Board* board, Bomb* bombs, double timeStep);
 
-void renderEnemy(Enemy* player, SDL_Renderer* renderer);
+void renderEnemy(Enemy* enemy, SDL_Renderer* renderer);
 
-void closeEnemy(Enemy* player);
+void closeEnemy(Enemy* enemy);
 
 #endif //BOMBERMAN_CLIENT_ENEMY_H
