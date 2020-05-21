@@ -26,7 +26,7 @@ void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
     enemy->image.y = enemy->y - enemy->image.w / 2;
 }
 
-void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *enemy)
+void loadEnemy(SDL_Renderer *renderer, Enemy *enemy)
 {
     SDL_Surface *surface = IMG_Load("./../sprites/enemy.png");
     if(surface == NULL) {

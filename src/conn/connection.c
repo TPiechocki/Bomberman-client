@@ -112,6 +112,7 @@ void decodeMessage(char *message, Connection *conn) {
                 sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
                 if(playerc != conn->player_count) {
                     initEnemy(enemies[playerc - 2], board, x, y, name);
+                    loadEnemy(window->gRenderer, enemies[playerc-2]);
                     conn->player_count = playerc;
                 }
                 for(int i = 0; i < conn->player_count - 1; i++){

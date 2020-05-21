@@ -4,7 +4,8 @@
 
 #include "window.h"
 
-int init(Window* window){
+int init(){
+    window = (Window*)malloc(sizeof(Window));
 
     window->gWindow = NULL;
     window->gScreenSurface = NULL;
@@ -44,7 +45,7 @@ int init(Window* window){
     return 0;
 }
 
-void close_window(Window* window){
+void close_window(){
     // Destroy renderer
     SDL_DestroyRenderer(window->gRenderer);
     window->gRenderer = NULL;
@@ -55,4 +56,5 @@ void close_window(Window* window){
 
     // Quit SDL subsystems
     SDL_Quit();
+    free(window);
 }

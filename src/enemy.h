@@ -26,7 +26,7 @@ pthread_mutex_t enemy_lock;
 void initAllEnemies(int count);
 void initEnemy(Enemy* enemy, Board* board, int startX, int startY, char* name);
 
-void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *p);
+void loadEnemy( SDL_Renderer *renderer, Enemy *p);
 
 void moveEnemy(Enemy* enemy);
 

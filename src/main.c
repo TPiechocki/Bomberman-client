@@ -13,14 +13,12 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Missing player name and/or port number\n");
         return -1;
     }
-    // Initialize window struct
-    Window window;
-    window.run = SDL_TRUE;
     // Initialize window
-    if(init(&window) < 0){
+    if(init() < 0){
         fprintf(stderr, "Error in window init.\n");
     }
     else {
+        window->run = SDL_TRUE;
         // Initialize connection to server
         Connection conn;
         initConnection(&conn, argv[1], argv[2]); // name and port as user input
@@ -30,20 +28,20 @@ int main(int argc, char* argv[]) {
         initAllEnemies(4);
 
         // Initialize Board data
-        initBoard(window.gWindow, conn.player_count);
+        initBoard(window->gWindow, conn.player_count);
         // Loading board data
-        loadBoard(window.gWindow, window.gRenderer);
+        loadBoard(window->gWindow, window->gRenderer);
 
         // Initialize Player data
         initPlayer(board);
         // Loading player data
-        loadPlayer(window.gWindow, window.gRenderer);
+        loadPlayer(window->gWindow, window->gRenderer);
 
         initAllBombs(1);
         initBomb(bombs[0]);
         //initBomb(bombs[1]);
         // Loading bomb data
-        loadBomb(bombs[0], window.gRenderer);
+        loadBomb(bombs[0], window->gRenderer);
 
         // Initialize Velocity Timer & Move Timer
         Timer vTimer;
@@ -55,17 +53,17 @@ int main(int argc, char* argv[]) {
 
         // Event handler
         SDL_Event e;
-        while (window.run) {
+        while (window->run) {
             // Event polling queue
             while (SDL_PollEvent(&e) != 0){
 
                 switch (e.type) {
                     // User request quit
                     case SDL_QUIT:
-                        window.run = SDL_FALSE;
+                        window->run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&e, window.gRenderer, board, &conn, bombs[0]);
+                        handlePlayerEvent(&e, window->gRenderer, board, &conn, bombs[0]);
                         break;
                 }
             }
@@ -89,27 +87,36 @@ int main(int argc, char* argv[]) {
             // Restart step timer / velocity timer
             startTimer(&vTimer);
 
+            // Move enemies
+            if(conn.player_count > 1)
+                for(int i = 0; i < conn.player_count - 1; i++)
+                    moveEnemy(enemies[i]);
+
             // Clearing renderer
-            SDL_RenderClear(window.gRenderer);
+            SDL_RenderClear(window->gRenderer);
 
             // Render board
-            renderBoard(window.gRenderer);
+            renderBoard(window->gRenderer);
 
             if(bombs[0]->placed == 1)
-                renderBomb(bombs[0], window.gRenderer);
+                renderBomb(bombs[0], window->gRenderer);
             checkForExplosion(bombs[0], board);
             if(bombs[0]->exploded == 1)
-                renderExplosion(bombs[0], window.gRenderer);
+                renderExplosion(bombs[0], window->gRenderer);
             if(bombs[0]->exploded == 1 && getTicksTimer(bombs[0]->timer) >= 2000.f) {
                 hideBomb(bombs[0]);
                 player->placedBomb = 0;
             }
+            // Render enemies
+            if(conn.player_count > 1)
+                for(int i = 0; i < conn.player_count - 1; i++)
+                    renderEnemy(enemies[i], window->gRenderer);
 
             // Render player
-            renderPlayer(window.gRenderer);
+            renderPlayer(window->gRenderer);
 
             // Presenting data in renderer
-            SDL_RenderPresent(window.gRenderer);
+            SDL_RenderPresent(window->gRenderer);
         }
         // Freeing resources for rendered elements
         closeBoard();
@@ -121,7 +128,7 @@ int main(int argc, char* argv[]) {
         closeAllEnemies(4);
     }
     // Free resources and close SDL
-    close_window(&window);
+    close_window();
 
     return 0;
 }

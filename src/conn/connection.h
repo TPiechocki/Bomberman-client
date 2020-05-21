@@ -15,6 +15,7 @@
 #include <pthread.h>
 #include "../enemy.h"
 #include "../bomb.h"
+#include "../window.h"
 
 typedef enum Messages_ids{
     move_msg,

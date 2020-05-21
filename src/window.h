@@ -17,17 +17,17 @@ typedef struct SDLWindowStruct {
     int run;
 }Window;
 
+Window* window;
+
 /**
  * Initializes window struct and SDL window.
- * @param Window
  * @return 0 on success, -1 on error
  */
-int init(Window* window);
+int init();
 
 /**
  * Clears resources and closes SDL window.
- * @param Window
  */
-void close_window(Window* window);
+void close_window();
 
 #endif //BOMBERMAN_CLIENT_WINDOW_H
