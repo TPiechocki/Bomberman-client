@@ -17,7 +17,7 @@ typedef struct Enemy{
     int y;
     int nextX;
     int nextY;
-    char* name;
+    char name[100];
 } Enemy;
 
 Enemy** enemies;

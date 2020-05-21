@@ -13,7 +13,7 @@ void initAllEnemies(int count){
 void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
 
     //enemy = (Enemy*)malloc(sizeof(Enemy));
-    enemy->name = name;
+    strcpy(enemy->name, name);
 
     enemy->image.w = board->length / board->size * 7 / 10;
     enemy->image.h = enemy->image.w;
