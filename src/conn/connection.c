@@ -121,8 +121,10 @@ void decodeMessage(char *message, Connection *conn) {
                 }
                 for(int i = 0; i < conn->player_count - 1; i++){
                     if(strcmp(name, enemies[i]->name) == 0){
+                        pthread_mutex_lock(&enemy_lock);
                         enemies[i]->nextX = x;
                         enemies[i]->nextY = y;
+                        pthread_mutex_unlock(&enemy_lock);
                     }
                 }
                 buff_ptr += buff_length;

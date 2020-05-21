@@ -43,11 +43,13 @@ void moveEnemy(Enemy* enemy){
     // based off server messages
     // move enemy to next position given by server
     // LOCK - alternative LOCK before for() for all enemies
+    pthread_mutex_lock(&enemy_lock);
     enemy->x = enemy->nextX;
     enemy->y = enemy->nextY;
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
     // UNLOCK
+    pthread_mutex_unlock(&enemy_lock);
 }
 
 
