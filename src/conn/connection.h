@@ -17,11 +17,13 @@
 #include "../bomb.h"
 
 typedef enum Messages_ids{
-    move,
-    bomb,
-    name,
-    start,
-    end,
+    move_msg,
+    bomb_msg,
+    name_msg,
+    start_msg,
+    end_msg,
+    players_msg,
+    bombs_msg,
 }MSG;
 
 typedef struct connection_manager_struct{
@@ -43,7 +45,7 @@ void initConnection(Connection* conn, char* name, char* port);
 
 void connectServer(Connection* conn);
 void* communication(void* args);
-void decodeMessage(char* message);
+void decodeMessage(char* message, Connection* conn);
 
 void sendName(Connection* conn);
 void sendPlayerData(Connection* conn, int x, int y, unsigned int* action_counter);

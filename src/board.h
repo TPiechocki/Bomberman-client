@@ -32,18 +32,20 @@ typedef struct board_struct{
     int* bombs_placed;
 } Board;
 
-void initBoard(Board* board, SDL_Window* window, int enemy_count);
+Board* board;
 
-void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);
+void initBoard(SDL_Window* window, int enemy_count);
 
-void renderBoard(SDL_Renderer* renderer, Board* board);
+void loadBoard(SDL_Window *window, SDL_Renderer *renderer);
 
-void renderOutsideWalls(Board* board, SDL_Renderer* renderer);
-void renderChessBoard(SDL_Renderer* renderer, Board* board);
-void renderIceBlocks(SDL_Renderer* renderer, Board* board);
+void renderBoard(SDL_Renderer* renderer);
 
-void destroyBreakableIceBlock(Board* board, int index);
+void renderOutsideWalls(SDL_Renderer* renderer);
+void renderChessBoard(SDL_Renderer* renderer);
+void renderIceBlocks(SDL_Renderer* renderer);
 
-void closeBoard(Board* board);
+void destroyBreakableIceBlock(int index);
+
+void closeBoard();
 
 #endif //BOMBERMAN_CLIENT_BOARD_H

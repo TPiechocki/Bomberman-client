@@ -27,18 +27,19 @@ int main(int argc, char* argv[]) {
         connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
 
+        initAllEnemies(4);
+
         // Initialize Board data
-        Board board;
-        initBoard(&board, window.gWindow, 0);
+        initBoard(window.gWindow, conn.player_count);
         // Loading board data
-        loadBoard(window.gWindow, window.gRenderer, &board);
+        loadBoard(window.gWindow, window.gRenderer);
 
         // Initialize Player data
-        initPlayer(&board);
+        initPlayer(board);
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer);
 
-        initAllBombs();
+        initAllBombs(1);
         initBomb(bombs[0]);
         //initBomb(bombs[1]);
         // Loading bomb data
@@ -64,7 +65,7 @@ int main(int argc, char* argv[]) {
                         window.run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&e, window.gRenderer, &board, &conn, bombs[0]);
+                        handlePlayerEvent(&e, window.gRenderer, board, &conn, bombs[0]);
                         break;
                 }
             }
@@ -74,7 +75,7 @@ int main(int argc, char* argv[]) {
             int stepX = (int)player->x;
             int stepY = (int)player->y;
             // Moving player
-            movePlayer(&board, bombs[0], timeStep);
+            movePlayer(board, bombs[0], timeStep);
             stepX -= (int)player->x;
             stepY -= (int)player->y;
             if(stepX != 0 || stepY != 0){
@@ -92,11 +93,11 @@ int main(int argc, char* argv[]) {
             SDL_RenderClear(window.gRenderer);
 
             // Render board
-            renderBoard(window.gRenderer, &board);
+            renderBoard(window.gRenderer);
 
             if(bombs[0]->placed == 1)
                 renderBomb(bombs[0], window.gRenderer);
-            checkForExplosion(bombs[0], &board);
+            checkForExplosion(bombs[0], board);
             if(bombs[0]->exploded == 1)
                 renderExplosion(bombs[0], window.gRenderer);
             if(bombs[0]->exploded == 1 && getTicksTimer(bombs[0]->timer) >= 2000.f) {
@@ -111,13 +112,13 @@ int main(int argc, char* argv[]) {
             SDL_RenderPresent(window.gRenderer);
         }
         // Freeing resources for rendered elements
-        closeBoard(&board);
+        closeBoard();
         closePlayer(&player);
         closeBomb(bombs[0]);
-        //closeBomb(bombs[1]);
         closeConnection(&conn);
         closeSocket(&conn);
-        closeAllBombs();
+        closeAllBombs(1);
+        closeAllEnemies(4);
     }
     // Free resources and close SDL
     close_window(&window);

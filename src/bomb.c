@@ -4,13 +4,14 @@
 
 #include "bomb.h"
 
-Bomb** bombs;
-
-void initAllBombs(){
-    bombs = (Bomb**)malloc(sizeof(Bomb*)*4);
-    for(int i = 0; i < 4; i++){
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCDFAInspection"
+void initAllBombs(int count){
+    bombs = (Bomb**)malloc(sizeof(Bomb*)*count);
+    for(int i = 0; i < count; i++){
         bombs[i] = (Bomb*)malloc(sizeof(Bomb));
     }
+    pthread_mutex_init(&bombs_lock, NULL);
 }
 
 void initBomb(Bomb *bomb) {
@@ -131,7 +132,7 @@ void explode(Bomb* bomb, Board* board){
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&right, board->breakableIceBlocks[j])){
                 collision = 1;
-                destroyBreakableIceBlock(board, j);
+                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -167,7 +168,7 @@ void explode(Bomb* bomb, Board* board){
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&down, board->breakableIceBlocks[j])){
                 collision = 1;
-                destroyBreakableIceBlock(board, j);
+                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -205,7 +206,7 @@ void explode(Bomb* bomb, Board* board){
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&up, board->breakableIceBlocks[j])){
                 collision = 1;
-                destroyBreakableIceBlock(board, j);
+                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -245,7 +246,7 @@ void explode(Bomb* bomb, Board* board){
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&left, board->breakableIceBlocks[j])){
                 collision = 1;
-                destroyBreakableIceBlock(board, j);
+                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -294,9 +295,11 @@ void closeBomb(Bomb *bomb) {
     //free(bomb);
 }
 
-void closeAllBombs(){
-    for(int i = 0; i < 4; i++){
+void closeAllBombs(int count){
+    for(int i = 0; i < count; i++){
         free(bombs[i]);
     }
     free(bombs);
+    pthread_mutex_destroy(&bombs_lock);
 }
+#pragma clang diagnostic pop

@@ -26,7 +26,7 @@ void *communication(void *args) {
     Connection *conn = (Connection *) args;
     // get possible IPs of server
     while (conn->closeConnection == 0) {
-        int result = getaddrinfo("localhost", conn->port, &conn->hints, &conn->infoptr);
+        int result = getaddrinfo("2.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         }
@@ -60,8 +60,9 @@ void *communication(void *args) {
             // receive info from socket
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
                 printf("%s\n", buffer);
-                memset(buffer, 0, sizeof(buffer));
                 // decode message from server
+                decodeMessage(buffer, conn);
+                memset(buffer, 0, sizeof(buffer));
             }
         }
         conn->connectionEstablished = 0;
@@ -76,14 +77,61 @@ void *communication(void *args) {
     return NULL;
 }
 
-void decodeMessage(char *message) {
-
+void decodeMessage(char *message, Connection *conn) {
+    int msg, buff_length;
+    char* buff_ptr = message;
+    sscanf(buff_ptr, "%d%n", &msg, &buff_length);
+    buff_ptr += buff_length;
+    switch (msg) {
+        case start_msg: {
+            int enemy_c = 0;
+            sscanf(buff_ptr, "%d\n%n", &conn->player_count, &buff_length);
+            buff_ptr += buff_length;
+            for (int i = 0; i < conn->player_count; i++) {
+                char name[100];
+                sscanf(buff_ptr, "%s\n%n", name, &buff_length);
+                if (strcmp(name, conn->name) == 0);
+                    // place player on proper space
+                else {
+                    initEnemy(enemies[enemy_c], board, board->start_x + board->tile_length / 2,
+                              board->start_y + board->tile_length / 2, name);
+                    enemy_c++;
+                }
+                buff_ptr += buff_length;
+            }
+        }
+        break;
+        case players_msg:
+        {
+            int playerc;
+            sscanf(buff_ptr, "%d\n%n", &playerc, &buff_length);
+            buff_ptr += buff_length;
+            while(*buff_ptr){
+                char name[100];
+                int x, y;
+                sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
+                if(playerc != conn->player_count) {
+                    initEnemy(enemies[playerc - 2], board, x, y, name);
+                    conn->player_count = playerc;
+                }
+                for(int i = 0; i < conn->player_count - 1; i++){
+                    if(strcmp(name, enemies[i]->name) == 0){
+                        enemies[i]->nextX = x;
+                        enemies[i]->nextY = y;
+                    }
+                }
+                buff_ptr += buff_length;
+            }
+        }
+        break;
+        default: break;
+    }
 }
 
 void sendName(Connection *conn) {
     if (conn->connectionEstablished == 1) {
         char buffer[100];
-        sprintf(buffer, "%d %s", name, conn->name);
+        sprintf(buffer, "%d %s", name_msg, conn->name);
         send(conn->socket, buffer, strlen(buffer), 0);
     }
 }
@@ -92,20 +140,16 @@ void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter
     if (conn->connectionEstablished == 1) {
         // convert data to ANSI string
         char buffer[100];
-        sprintf(buffer, "%s %d %d %d\n", conn->name, x, y, (*action_counter)++);
-        char buffer2[100];
-        sprintf(buffer2, "%d %s", /*move,*/ strlen(buffer), buffer);
-        send(conn->socket, buffer2, strlen(buffer2), 0);
+        sprintf(buffer, "%d %s %d %d %d\n", move_msg, conn->name, x, y, (*action_counter)++);
+        send(conn->socket, buffer, strlen(buffer), 0);
     }
 }
 
 void sendBombEvent(Connection *conn, int tile) {
     if(conn->connectionEstablished == 1){
         char buffer[100];
-        sprintf(buffer, "%s %d", conn->name, tile);
-        char buffer2[100];
-        sprintf(buffer2, "%d %d %s", bomb, strlen(buffer2), buffer2);
-        send(conn->socket, buffer2, strlen(buffer2), 0);
+        sprintf(buffer, "%d %s %d", bomb_msg, conn->name, tile);
+        send(conn->socket, buffer, strlen(buffer), 0);
     }
 }
 

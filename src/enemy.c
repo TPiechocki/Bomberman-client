@@ -3,10 +3,8 @@
 //
 #include "enemy.h"
 
-Enemy** enemies;
-
-void initAllEnemies(){
-    enemies = (Enemy**)malloc(sizeof(Enemy*)*4);
+void initAllEnemies(int count){
+    enemies = (Enemy**)malloc(sizeof(Enemy*)*count);
     for(int i = 0; i < 4; i++){
         enemies[i] = (Enemy*)malloc(sizeof(Enemy));
     }
@@ -63,8 +61,8 @@ void closeEnemy(Enemy *enemy) {
     //free(enemy);
 }
 
-void closeAllEnemies(){
-    for(int i = 0; i < 4; i++){
+void closeAllEnemies(int count){
+    for(int i = 0; i < count; i++){
         free(enemies[i]);
     }
     free(enemies);
