@@ -115,7 +115,7 @@ void decodeMessage(char *message, Connection *conn) {
                     loadEnemy(window->gRenderer, enemies[playerc-2]);
                     conn->player_count += 1;
                 }
-                else if(playerc != conn->player_count && strcmp(conn->name, name) == 0){
+                else if(strcmp(conn->name, name) == 0){
                     buff_ptr += buff_length;
                     continue;
                 }
