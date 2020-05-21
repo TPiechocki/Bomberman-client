@@ -147,7 +147,7 @@ void explode(Bomb* bomb, Board* board){
         //down side collide with outside wall
         for(int j = 0; j < 4; j++){
             if(SDL_HasIntersection(&down, &board->outsideWalls[j])){
-                down.w -= board->tile_length;
+                down.h -= board->tile_length;
                 collision = 1;
                 break;
             }
@@ -157,7 +157,7 @@ void explode(Bomb* bomb, Board* board){
         //down side collide with ice block
         for(int j = 0; j < board->iceBlocksCount; j++){
             if(SDL_HasIntersection(&down, &board->iceBlocks[j])){
-                down.w -= board->tile_length;
+                down.h -= board->tile_length;
                 collision = 1;
                 break;
             }
