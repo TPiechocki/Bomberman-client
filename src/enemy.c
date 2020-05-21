@@ -8,6 +8,7 @@ void initAllEnemies(int count){
     for(int i = 0; i < 4; i++){
         enemies[i] = (Enemy*)malloc(sizeof(Enemy));
     }
+    pthread_mutex_init(&enemy_lock);
 }
 
 void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
@@ -66,4 +67,5 @@ void closeAllEnemies(int count){
         free(enemies[i]);
     }
     free(enemies);
+    pthread_mutex_destroy(&enemy_lock);
 }
