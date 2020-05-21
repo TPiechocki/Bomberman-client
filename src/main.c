@@ -20,12 +20,11 @@ int main(int argc, char* argv[]) {
     else {
         window->run = SDL_TRUE;
         // Initialize connection to server
+        initAllEnemies(4);
         Connection conn;
         initConnection(&conn, argv[1], argv[2]); // name and port as user input
         connectServer(&conn);
         while (conn.connectionEstablished == 0); // wait for connection
-
-        initAllEnemies(4);
 
         // Initialize Board data
         initBoard(window->gWindow, conn.player_count);
