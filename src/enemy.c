@@ -8,7 +8,7 @@ void initAllEnemies(int count){
     for(int i = 0; i < 4; i++){
         enemies[i] = (Enemy*)malloc(sizeof(Enemy));
     }
-    pthread_mutex_init(&enemy_lock);
+    pthread_mutex_init(&enemy_lock, NULL);
 }
 
 void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
