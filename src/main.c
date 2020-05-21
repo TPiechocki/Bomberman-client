@@ -39,7 +39,6 @@ int main(int argc, char* argv[]) {
 
         initAllBombs(1);
         initBomb(bombs[0]);
-        //initBomb(bombs[1]);
         // Loading bomb data
         loadBomb(bombs[0], window->gRenderer);
 
@@ -123,7 +122,6 @@ int main(int argc, char* argv[]) {
         closePlayer(&player);
         closeBomb(bombs[0]);
         closeAllBombs(1);
-
         for(int i  = 0; i < conn.player_count-1; i++){
             closeEnemy(enemies[i]);
         }

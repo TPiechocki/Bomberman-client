@@ -110,10 +110,14 @@ void decodeMessage(char *message, Connection *conn) {
                 char name[100];
                 int x, y;
                 sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
-                if(playerc != conn->player_count) {
+                if(playerc != conn->player_count && strcmp(conn->name, name) != 0) {
                     initEnemy(enemies[playerc - 2], board, x, y, name);
                     loadEnemy(window->gRenderer, enemies[playerc-2]);
-                    conn->player_count = playerc;
+                    conn->player_count += 1;
+                }
+                else if(playerc != conn->player_count && strcmp(conn->name, name) == 0){
+                    buff_ptr += buff_length;
+                    continue;
                 }
                 for(int i = 0; i < conn->player_count - 1; i++){
                     if(strcmp(name, enemies[i]->name) == 0){
