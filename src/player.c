@@ -3,8 +3,12 @@
 //
 #include "player.h"
 
-void initPlayer(Player *player, Board *board) {
+Player* player;
+
+void initPlayer(Board *board) {
     double tilesPerSecond = 3;
+
+    player = (Player*)malloc(sizeof(Player));
 
     player->velocity = tilesPerSecond * (double)board->length / board->size; // tile per second
     player->velX = 0;
@@ -25,7 +29,7 @@ void initPlayer(Player *player, Board *board) {
                            + ((player->x - board->start_x) / board->tile_length);
 }
 
-void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
+void loadPlayer(SDL_Window *window, SDL_Renderer *renderer)
 {
     SDL_Surface *surface = IMG_Load(PLAYER_SPRITE_PATH);
     if(surface == NULL) {
@@ -33,11 +37,11 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p)
         return;
     }
 
-    p->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    player->texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 }
 
-void handlePlayerEvent(Player *player, SDL_Event *e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb) {
+void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb) {
     // If key was pressed
     if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
         // Adjust velocity (start moving)
@@ -50,7 +54,7 @@ void handlePlayerEvent(Player *player, SDL_Event *e, SDL_Renderer *renderer, Boa
             case SDLK_s: player->velY += player->velocity; break;
             case SDLK_a: player->velX -= player->velocity; break;
             case SDLK_d: player->velX += player->velocity; break;
-            case SDLK_SPACE: placeBombPlayer(player, board, bomb); break;
+            case SDLK_SPACE: placeBombPlayer(board, bomb); break;
         }
     }
     else if( e->type == SDL_KEYUP && e->key.repeat == 0){
@@ -69,7 +73,7 @@ void handlePlayerEvent(Player *player, SDL_Event *e, SDL_Renderer *renderer, Boa
     }
 }
 
-void movePlayer(Player* player, Board* board, Bomb* bombs, double timeStep){
+void movePlayer(Board* board, Bomb* bombs, double timeStep){
     // Scale for diagonal movement
     double scale = 1.;
     // If the diagonal movement occurs, scale it down
@@ -244,12 +248,12 @@ void movePlayer(Player* player, Board* board, Bomb* bombs, double timeStep){
                            + ((player->x - board->start_x) / board->tile_length);
 }
 
-void renderPlayer(Player *player, SDL_Renderer *renderer) {
+void renderPlayer(SDL_Renderer *renderer) {
     //render player
     SDL_RenderCopy(renderer, player->texture, NULL, &player->image);
 }
 
-void placeBombPlayer(Player* player, Board *board, Bomb* bomb){
+void placeBombPlayer(Board *board, Bomb* bomb){
     // send to server message about bomb placement
     if(player->placedBomb == 0) {
         placeBomb(bomb, board, player->current_tile);
@@ -258,7 +262,8 @@ void placeBombPlayer(Player* player, Board *board, Bomb* bomb){
     }
 }
 
-void closePlayer(Player *player) {
+void closePlayer() {
     if(player->texture != NULL)
         SDL_DestroyTexture(player->texture);
+    free(player);
 }

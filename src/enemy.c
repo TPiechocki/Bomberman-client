@@ -3,16 +3,11 @@
 //
 #include "enemy.h"
 
+Enemy* enemies[3];
 
 void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
-    double tilesPerSecond = 3;
 
-    //enemy->velocity = tilesPerSecond * (double)board->length / board->size; // tile per second
-    //enemy->velX = 0;
-    //enemy->velY = 0;
-
-    //enemy->onBomb = 0;
-    //enemy->placedBomb = 0;
+    enemy = (Enemy*)malloc(sizeof(Enemy));
     enemy->name = name;
 
     enemy->image.w = board->length / board->size * 7 / 10;
@@ -38,7 +33,7 @@ void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *enemy)
     SDL_FreeSurface(surface);
 }
 
-void moveEnemy(Enemy* enemy, Board* board, Bomb* bombs, double timeStep){
+void moveEnemy(Enemy* enemy, Board* board){
     // based off server messages
 }
 
@@ -51,4 +46,5 @@ void renderEnemy(Enemy *enemy, SDL_Renderer *renderer) {
 void closeEnemy(Enemy *enemy) {
     if(enemy->texture != NULL)
         SDL_DestroyTexture(enemy->texture);
+    free(enemy);
 }

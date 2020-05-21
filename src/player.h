@@ -28,18 +28,20 @@ typedef struct Player
     double velY;
 } Player;
 
-void initPlayer(Player* player, Board* board);
+Player* player;
 
-void loadPlayer(SDL_Window *window, SDL_Renderer *renderer, Player *p); //Loading player texture
+void initPlayer(Board* board);
 
-void handlePlayerEvent(Player* player, SDL_Event* e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb);
-void movePlayer(Player* player, Board* board, Bomb* bombs, double timeStep);
+void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player texture
 
-void placeBombPlayer(Player* player, Board *board, Bomb* bomb);
+void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb);
+void movePlayer(Board* board, Bomb* bombs, double timeStep);
 
-void renderPlayer(Player* player, SDL_Renderer* renderer);
+void placeBombPlayer(Board *board, Bomb* bomb);
 
-void closePlayer(Player* player);
+void renderPlayer(SDL_Renderer* renderer);
+
+void closePlayer();
 
 
 #endif //BOMBERMAN_CLIENT_PLAYER_H

@@ -13,6 +13,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "../enemy.h"
+#include "../bomb.h"
 
 typedef enum Messages_ids{
     move,

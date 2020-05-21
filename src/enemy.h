@@ -17,18 +17,15 @@ typedef struct Enemy{
     int nextX;
     int nextY;
     char* name;
-    //double velocity;
-    //double velX;
-    //double velY;
-    //int placedBomb;
-    //int onBomb;
 } Enemy;
+
+Enemy* enemies[3];
 
 void initEnemy(Enemy* enemy, Board* board, int startX, int startY, char* name);
 
 void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *p);
 
-void moveEnemy(Enemy* enemy, Board* board, Bomb* bombs, double timeStep);
+void moveEnemy(Enemy* enemy, Board* board);
 
 void renderEnemy(Enemy* enemy, SDL_Renderer* renderer);
 

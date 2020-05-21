@@ -34,15 +34,13 @@ int main(int argc, char* argv[]) {
         loadBoard(window.gWindow, window.gRenderer, &board);
 
         // Initialize Player data
-        Player player;
-        initPlayer(&player, &board);
+        initPlayer(&board);
         // Loading player data
-        loadPlayer(window.gWindow, window.gRenderer, &player);
+        loadPlayer(window.gWindow, window.gRenderer);
 
-        Bomb playerBomb;
-        initBomb(&playerBomb);
+        initBomb(bombs[0]);
         // Loading bomb data
-        loadBomb(&playerBomb, window.gRenderer);
+        loadBomb(bombs[0], window.gRenderer);
 
         // Initialize Velocity Timer
         Timer vTimer;
@@ -64,24 +62,24 @@ int main(int argc, char* argv[]) {
                         window.run = SDL_FALSE;
                         break;
                     default:
-                        handlePlayerEvent(&player, &e, window.gRenderer, &board, &conn, &playerBomb);
+                        handlePlayerEvent(&e, window.gRenderer, &board, &conn, bombs[0]);
                         break;
                 }
             }
 
             // Calculate time step -> ms -> s
             double timeStep = getTicksTimer(&vTimer) / 1000.f;
-            int stepX = (int)player.x;
-            int stepY = (int)player.y;
+            int stepX = (int)player->x;
+            int stepY = (int)player->y;
             // Moving player
-            movePlayer(&player, &board, &playerBomb, timeStep);
-            stepX -= (int)player.x;
-            stepY -= (int)player.y;
+            movePlayer(&board, bombs[0], timeStep);
+            stepX -= (int)player->x;
+            stepY -= (int)player->y;
             if(stepX != 0 || stepY != 0){
                 // player moved, send to server
                 // send not more often than 50 ms
                 if(getTicksTimer(&moveTimer) >= 50.f) {
-                    sendPlayerData(&conn, (int) player.x, (int) player.y, &player.counter);
+                    sendPlayerData(&conn, (int) player->x, (int) player->y, &player->counter);
                     startTimer(&moveTimer);
                 }
             }
@@ -94,18 +92,18 @@ int main(int argc, char* argv[]) {
             // Render board
             renderBoard(window.gRenderer, &board);
 
-            if(playerBomb.placed == 1)
-                renderBomb(&playerBomb, window.gRenderer);
-            checkForExplosion(&playerBomb, &board);
-            if(playerBomb.exploded == 1)
-                renderExplosion(&playerBomb, window.gRenderer);
-            if(playerBomb.exploded == 1 && getTicksTimer(playerBomb.timer) >= 2000.f) {
-                hideBomb(&playerBomb);
-                player.placedBomb = 0;
+            if(bombs[0]->placed == 1)
+                renderBomb(bombs[0], window.gRenderer);
+            checkForExplosion(bombs[0], &board);
+            if(bombs[0]->exploded == 1)
+                renderExplosion(bombs[0], window.gRenderer);
+            if(bombs[0]->exploded == 1 && getTicksTimer(bombs[0]->timer) >= 2000.f) {
+                hideBomb(bombs[0]);
+                player->placedBomb = 0;
             }
 
             // Render player
-            renderPlayer(&player, window.gRenderer);
+            renderPlayer(window.gRenderer);
 
             // Presenting data in renderer
             SDL_RenderPresent(window.gRenderer);
@@ -113,7 +111,7 @@ int main(int argc, char* argv[]) {
         // Freeing resources for rendered elements
         closeBoard(&board);
         closePlayer(&player);
-        closeBomb(&playerBomb);
+        closeBomb(bombs[0]);
         closeConnection(&conn);
         closeSocket(&conn);
     }

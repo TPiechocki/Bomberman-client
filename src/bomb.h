@@ -25,6 +25,8 @@ typedef struct bomb_struct{
   SDL_Rect centerRect;
 }Bomb;
 
+Bomb* bombs[4];
+
 void initBomb(Bomb* bomb);
 void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
 void placeBomb(Bomb* bomb, Board* board, int tile);
