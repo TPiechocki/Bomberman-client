@@ -122,9 +122,13 @@ int main(int argc, char* argv[]) {
         closeBoard();
         closePlayer(&player);
         closeBomb(bombs[0]);
+        closeAllBombs(1);
+
+        for(int i  = 0; i < conn.player_count-1; i++){
+            closeEnemy(enemies[i]);
+        }
         closeConnection(&conn);
         closeSocket(&conn);
-        closeAllBombs(1);
         closeAllEnemies(4);
     }
     // Free resources and close SDL
