@@ -3,11 +3,18 @@
 //
 #include "enemy.h"
 
-Enemy* enemies[3];
+Enemy** enemies;
+
+void initAllEnemies(){
+    enemies = (Enemy**)malloc(sizeof(Enemy*)*4);
+    for(int i = 0; i < 4; i++){
+        enemies[i] = (Enemy*)malloc(sizeof(Enemy));
+    }
+}
 
 void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
 
-    enemy = (Enemy*)malloc(sizeof(Enemy));
+    //enemy = (Enemy*)malloc(sizeof(Enemy));
     enemy->name = name;
 
     enemy->image.w = board->length / board->size * 7 / 10;
@@ -15,10 +22,10 @@ void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
 
     enemy->x = startX;
     enemy->y = startY;
-    enemy->nextX = -1;
-    enemy->nextY = -1;
-    enemy->image.x = (int)enemy->x - enemy->image.w / 2;
-    enemy->image.y = (int)enemy->y - enemy->image.w / 2;
+    enemy->nextX = enemy->x;
+    enemy->nextY = enemy->y;
+    enemy->image.x = enemy->x - enemy->image.w / 2;
+    enemy->image.y = enemy->y - enemy->image.w / 2;
 }
 
 void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *enemy)
@@ -33,8 +40,15 @@ void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *enemy)
     SDL_FreeSurface(surface);
 }
 
-void moveEnemy(Enemy* enemy, Board* board){
+void moveEnemy(Enemy* enemy){
     // based off server messages
+    // move enemy to next position given by server
+    // LOCK - alternative LOCK before for() for all enemies
+    enemy->x = enemy->nextX;
+    enemy->y = enemy->nextY;
+    enemy->image.x = enemy->x - enemy->image.w / 2;
+    enemy->image.y = enemy->y - enemy->image.w / 2;
+    // UNLOCK
 }
 
 
@@ -46,5 +60,12 @@ void renderEnemy(Enemy *enemy, SDL_Renderer *renderer) {
 void closeEnemy(Enemy *enemy) {
     if(enemy->texture != NULL)
         SDL_DestroyTexture(enemy->texture);
-    free(enemy);
+    //free(enemy);
+}
+
+void closeAllEnemies(){
+    for(int i = 0; i < 4; i++){
+        free(enemies[i]);
+    }
+    free(enemies);
 }

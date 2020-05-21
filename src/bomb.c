@@ -4,10 +4,17 @@
 
 #include "bomb.h"
 
-Bomb* bombs[4];
+Bomb** bombs;
+
+void initAllBombs(){
+    bombs = (Bomb**)malloc(sizeof(Bomb*)*4);
+    for(int i = 0; i < 4; i++){
+        bombs[i] = (Bomb*)malloc(sizeof(Bomb));
+    }
+}
 
 void initBomb(Bomb *bomb) {
-    bomb = (Bomb*)malloc(sizeof(Bomb));
+    //bomb = (Bomb*)malloc(sizeof(Bomb));
 
     bomb->tile = -1;
     bomb->placed = 0;
@@ -284,5 +291,12 @@ void closeBomb(Bomb *bomb) {
     SDL_DestroyTexture(bomb->explVerTexture);
     SDL_DestroyTexture(bomb->centerTexture);
     free(bomb->timer);
-    free(bomb);
+    //free(bomb);
+}
+
+void closeAllBombs(){
+    for(int i = 0; i < 4; i++){
+        free(bombs[i]);
+    }
+    free(bombs);
 }

@@ -15,6 +15,7 @@ void initConnection(Connection *conn, char *name, char *port) {
     conn->port = port;
     conn->closeConnection = 0;
     conn->connectionEstablished = 0;
+    conn->player_count = 1;
 }
 
 void connectServer(Connection *conn) {
@@ -25,7 +26,7 @@ void *communication(void *args) {
     Connection *conn = (Connection *) args;
     // get possible IPs of server
     while (conn->closeConnection == 0) {
-        int result = getaddrinfo("0.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
+        int result = getaddrinfo("localhost", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         }
@@ -60,12 +61,13 @@ void *communication(void *args) {
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
                 printf("%s\n", buffer);
                 memset(buffer, 0, sizeof(buffer));
+                // decode message from server
             }
         }
         conn->connectionEstablished = 0;
         if(conn->closeConnection == 0) {
             fprintf(stderr, "Connection lost, attempting reconnect...\n");
-            //close(conn->socket);
+            close(conn->socket);
             sleep(5);
         }
     }
@@ -81,7 +83,7 @@ void decodeMessage(char *message) {
 void sendName(Connection *conn) {
     if (conn->connectionEstablished == 1) {
         char buffer[100];
-        sprintf(buffer, "%s", conn->name);
+        sprintf(buffer, "%d %s", name, conn->name);
         send(conn->socket, buffer, strlen(buffer), 0);
     }
 }
@@ -92,7 +94,7 @@ void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter
         char buffer[100];
         sprintf(buffer, "%s %d %d %d\n", conn->name, x, y, (*action_counter)++);
         char buffer2[100];
-        sprintf(buffer2, "%d %s", strlen(buffer), buffer);
+        sprintf(buffer2, "%d %s", /*move,*/ strlen(buffer), buffer);
         send(conn->socket, buffer2, strlen(buffer2), 0);
     }
 }
@@ -102,7 +104,7 @@ void sendBombEvent(Connection *conn, int tile) {
         char buffer[100];
         sprintf(buffer, "%s %d", conn->name, tile);
         char buffer2[100];
-        sprintf(buffer2, "%d %s", strlen(buffer2), buffer2);
+        sprintf(buffer2, "%d %d %s", bomb, strlen(buffer2), buffer2);
         send(conn->socket, buffer2, strlen(buffer2), 0);
     }
 }

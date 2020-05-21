@@ -3,7 +3,7 @@
 //
 #include "board.h"
 
-void initBoard(Board* board, SDL_Window* window){
+void initBoard(Board* board, SDL_Window* window, int enemy_count){
     int windowWidth;
     int windowHeight;
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
@@ -22,7 +22,7 @@ void initBoard(Board* board, SDL_Window* window){
     board->tile_length = board->length / board->size;
     board->iceBlocksCount = 25;
     board->breakableIceBlocksCount = 90;
-    board->player_count = 1;
+    board->enemy_count = enemy_count;
 
     for(int i = 0; i < board->breakableIceBlocksCount; i++)
         board->breakableIceBlocks[i] = (SDL_Rect*)malloc(sizeof(SDL_Rect));

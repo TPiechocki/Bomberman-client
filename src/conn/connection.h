@@ -20,9 +20,8 @@ typedef enum Messages_ids{
     move,
     bomb,
     name,
-    end,
     start,
-    failure
+    end,
 }MSG;
 
 typedef struct connection_manager_struct{
@@ -35,7 +34,10 @@ typedef struct connection_manager_struct{
     char* name;
     char* port;
     pthread_t thread;
+    int player_count;
 }Connection;
+
+
 
 void initConnection(Connection* conn, char* name, char* port);
 

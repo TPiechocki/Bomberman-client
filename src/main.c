@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
 
         // Initialize Board data
         Board board;
-        initBoard(&board, window.gWindow);
+        initBoard(&board, window.gWindow, 0);
         // Loading board data
         loadBoard(window.gWindow, window.gRenderer, &board);
 
@@ -38,11 +38,13 @@ int main(int argc, char* argv[]) {
         // Loading player data
         loadPlayer(window.gWindow, window.gRenderer);
 
+        initAllBombs();
         initBomb(bombs[0]);
+        //initBomb(bombs[1]);
         // Loading bomb data
         loadBomb(bombs[0], window.gRenderer);
 
-        // Initialize Velocity Timer
+        // Initialize Velocity Timer & Move Timer
         Timer vTimer;
         initTimer(&vTimer);
 
@@ -112,8 +114,10 @@ int main(int argc, char* argv[]) {
         closeBoard(&board);
         closePlayer(&player);
         closeBomb(bombs[0]);
+        //closeBomb(bombs[1]);
         closeConnection(&conn);
         closeSocket(&conn);
+        closeAllBombs();
     }
     // Free resources and close SDL
     close_window(&window);

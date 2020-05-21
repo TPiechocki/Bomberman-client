@@ -28,11 +28,11 @@ typedef struct board_struct{
     SDL_Rect *breakableIceBlocks[90];
     int iceBlocksCount;
     int breakableIceBlocksCount;
-    int player_count; // bomb count = player count
+    int enemy_count;
     int* bombs_placed;
 } Board;
 
-void initBoard(Board* board, SDL_Window* window);
+void initBoard(Board* board, SDL_Window* window, int enemy_count);
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer, Board *board);
 

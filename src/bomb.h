@@ -25,8 +25,9 @@ typedef struct bomb_struct{
   SDL_Rect centerRect;
 }Bomb;
 
-Bomb* bombs[4];
+Bomb** bombs;
 
+void initAllBombs();
 void initBomb(Bomb* bomb);
 void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
 void placeBomb(Bomb* bomb, Board* board, int tile);
@@ -39,5 +40,6 @@ void renderBomb(Bomb* bomb, SDL_Renderer* renderer);
 void renderExplosion(Bomb* bomb, SDL_Renderer* renderer);
 
 void closeBomb(Bomb* bomb);
+void closeAllBombs();
 
 #endif //BOMBERMAN_CLIENT_BOMB_H

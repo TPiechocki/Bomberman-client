@@ -12,20 +12,20 @@
 typedef struct Enemy{
     SDL_Texture *texture;
     SDL_Rect image;
-    double x;
-    double y;
+    int x;
+    int y;
     int nextX;
     int nextY;
     char* name;
 } Enemy;
 
-Enemy* enemies[3];
+Enemy** enemies;
 
 void initEnemy(Enemy* enemy, Board* board, int startX, int startY, char* name);
 
 void loadEnemy(SDL_Window *window, SDL_Renderer *renderer, Enemy *p);
 
-void moveEnemy(Enemy* enemy, Board* board);
+void moveEnemy(Enemy* enemy);
 
 void renderEnemy(Enemy* enemy, SDL_Renderer* renderer);
 
