@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
             if(stepX != 0 || stepY != 0){
                 // player moved, send to server
                 // send not more often than 50 ms
-                if(getTicksTimer(&moveTimer) >= 50.f) {
+                if(getTicksTimer(&moveTimer) >= 0.f) {
                     sendPlayerData(&conn, (int) player->x, (int) player->y, &player->counter);
                     startTimer(&moveTimer);
                 }

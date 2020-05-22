@@ -25,6 +25,7 @@ void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
     enemy->nextY = enemy->y;
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
+    enemy->stepCounter = 6;
 }
 
 void loadEnemy(SDL_Renderer *renderer, Enemy *enemy)
@@ -44,8 +45,15 @@ void moveEnemy(Enemy* enemy){
     // move enemy to next position given by server
     // LOCK - alternative LOCK before for() for all enemies
     pthread_mutex_lock(&enemy_lock);
-    enemy->x = enemy->nextX;
-    enemy->y = enemy->nextY;
+    if(enemy->stepCounter < 6)
+    {
+        enemy->x += enemy->stepX;
+        enemy->y += enemy->stepY;
+        enemy->stepCounter++;
+    }
+
+    //enemy->x = enemy->nextX;
+    //enemy->y = enemy->nextY;
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
     // UNLOCK

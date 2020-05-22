@@ -124,6 +124,9 @@ void decodeMessage(char *message, Connection *conn) {
                         pthread_mutex_lock(&enemy_lock);
                         enemies[i]->nextX = x;
                         enemies[i]->nextY = y;
+                        enemies[i]->stepX = (enemies[i]->nextX - enemies[i]->x) / 6;
+                        enemies[i]->stepY = (enemies[i]->nextY - enemies[i]->y) / 6;
+                        enemies[i]->stepCounter = 0;
                         pthread_mutex_unlock(&enemy_lock);
                     }
                 }
