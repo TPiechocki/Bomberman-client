@@ -5,7 +5,7 @@
 
 Player* player;
 
-void initPlayer(Board *board) {
+void initPlayer(Board *board, int x, int y) {
     double tilesPerSecond = 3;
 
     player = (Player*)malloc(sizeof(Player));
@@ -21,8 +21,8 @@ void initPlayer(Board *board) {
     player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
     // positioning in the middle of top left tile
-    player->x = board->start_x + player->image.w / 2 + (board->length / board->size * 6 / 100);
-    player->y = board->start_y + player->image.w / 2 + (board->length / board->size * 6 / 100);
+    player->x = x;
+    player->y = y;
     player->image.x = (int)player->x - player->image.w / 2;
     player->image.y = (int)player->y - player->image.w / 2;
     player->current_tile = ((int)(player->y - board->start_y) / board->tile_length) * board->size
@@ -41,7 +41,7 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer)
     SDL_FreeSurface(surface);
 }
 
-void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb) {
+void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Bomb* bomb) {
     // If key was pressed
     if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
         // Adjust velocity (start moving)
@@ -69,7 +69,7 @@ void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Conne
             case SDLK_a: player->velX += player->velocity; break;
             case SDLK_d: player->velX -= player->velocity; break;
         }
-        sendPlayerData(conn, (int)player->x, (int)player->y, &player->counter);
+        sendPlayerData((int)player->x, (int)player->y, &player->counter);
     }
 }
 

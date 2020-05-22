@@ -30,11 +30,11 @@ typedef struct Player
 
 Player* player;
 
-void initPlayer(Board* board);
+void initPlayer(Board* board, int x, int y);
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player texture
 
-void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board, Connection* conn, Bomb* bomb);
+void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board, Bomb* bomb);
 void movePlayer(Board* board, Bomb* bombs, double timeStep);
 
 void placeBombPlayer(Board *board, Bomb* bomb);

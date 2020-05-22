@@ -30,6 +30,7 @@ typedef struct board_struct{
     int breakableIceBlocksCount;
     int enemy_count;
     int* bombs_placed;
+    int startGame;
 } Board;
 
 Board* board;

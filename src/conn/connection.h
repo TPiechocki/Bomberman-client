@@ -16,6 +16,7 @@
 #include "../enemy.h"
 #include "../bomb.h"
 #include "../window.h"
+#include "../player.h"
 
 typedef enum Messages_ids{
     move_msg,
@@ -40,20 +41,20 @@ typedef struct connection_manager_struct{
     int player_count;
 }Connection;
 
+Connection* conn;
 
+void initConnection(char* name, char* port);
 
-void initConnection(Connection* conn, char* name, char* port);
-
-void connectServer(Connection* conn);
+void connectServer();
 void* communication(void* args);
-void decodeMessage(char* message, Connection* conn);
+void decodeMessage(char* message);
 
-void sendName(Connection* conn);
-void sendPlayerData(Connection* conn, int x, int y, unsigned int* action_counter);
-void sendBombEvent(Connection* conn, int tile);
+void sendName();
+void sendPlayerData(int x, int y, unsigned int* action_counter);
+void sendBombEvent(int tile);
 
 
-void closeConnection(Connection* conn);
-void closeSocket(Connection* conn);
+void closeConnection();
+void closeSocket();
 
 #endif //BOMBERMAN_CLIENT_CONNECTION_H

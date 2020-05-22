@@ -4,7 +4,9 @@
 
 #include "connection.h"
 
-void initConnection(Connection *conn, char *name, char *port) {
+void initConnection(char *name, char *port) {
+    conn = (Connection*)malloc(sizeof(Connection));
+
     memset(&conn->hints, 0, sizeof(conn->hints));
     conn->hints.ai_family = AF_INET;
     conn->hints.ai_socktype = SOCK_STREAM;
@@ -18,12 +20,11 @@ void initConnection(Connection *conn, char *name, char *port) {
     conn->player_count = 1;
 }
 
-void connectServer(Connection *conn) {
-    pthread_create(&conn->thread, NULL, communication, conn);
+void connectServer() {
+    pthread_create(&conn->thread, NULL, communication, NULL);
 }
 
 void *communication(void *args) {
-    Connection *conn = (Connection *) args;
     // get possible IPs of server
     while (conn->closeConnection == 0) {
         int result = getaddrinfo("2.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
@@ -61,7 +62,7 @@ void *communication(void *args) {
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
                 printf("%s\n", buffer);
                 // decode message from server
-                decodeMessage(buffer, conn);
+                decodeMessage(buffer);
                 memset(buffer, 0, sizeof(buffer));
             }
         }
@@ -73,11 +74,11 @@ void *communication(void *args) {
         }
     }
     fprintf(stdout, "Connection to server closed.");
-    close(conn->socket);
+    // close(conn->socket);
     return NULL;
 }
 
-void decodeMessage(char *message, Connection *conn) {
+void decodeMessage(char *message) {
     int msg, buff_length;
     char* buff_ptr = message;
     sscanf(buff_ptr, "%d%n", &msg, &buff_length);
@@ -89,16 +90,21 @@ void decodeMessage(char *message, Connection *conn) {
             buff_ptr += buff_length;
             for (int i = 0; i < conn->player_count; i++) {
                 char name[100];
-                sscanf(buff_ptr, "%s\n%n", name, &buff_length);
-                if (strcmp(name, conn->name) == 0);
+                int x, y;
+                sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
+                if (strcmp(name, conn->name) == 0) {
                     // place player on proper space
+                    initPlayer(board, board->start_x + board->tile_length / 2, board->start_y + board->tile_length / 2);
+                    loadPlayer(window->gWindow, window->gRenderer);
+                }
                 else {
-                    initEnemy(enemies[enemy_c], board, board->start_x + board->tile_length / 2,
-                              board->start_y + board->tile_length / 2, name);
+                    initEnemy(enemies[enemy_c], board, x, y, name);
+                    loadEnemy(window->gRenderer, enemies[enemy_c]);
                     enemy_c++;
                 }
                 buff_ptr += buff_length;
             }
+            board->startGame = 1;
         }
         break;
         case players_msg:
@@ -110,12 +116,7 @@ void decodeMessage(char *message, Connection *conn) {
                 char name[100];
                 int x, y;
                 sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
-                if(playerc != conn->player_count && strcmp(conn->name, name) != 0) {
-                    initEnemy(enemies[conn->player_count - 1], board, x, y, name);
-                    loadEnemy(window->gRenderer, enemies[conn->player_count - 1]);
-                    conn->player_count += 1;
-                }
-                else if(strcmp(conn->name, name) == 0){
+                if(strcmp(conn->name, name) == 0){
                     buff_ptr += buff_length;
                     continue;
                 }
@@ -138,7 +139,7 @@ void decodeMessage(char *message, Connection *conn) {
     }
 }
 
-void sendName(Connection *conn) {
+void sendName() {
     if (conn->connectionEstablished == 1) {
         char buffer[100];
         sprintf(buffer, "%d %s", name_msg, conn->name);
@@ -146,7 +147,7 @@ void sendName(Connection *conn) {
     }
 }
 
-void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter) {
+void sendPlayerData(int x, int y, unsigned int *action_counter) {
     if (conn->connectionEstablished == 1) {
         // convert data to ANSI string
         char buffer[100];
@@ -155,7 +156,7 @@ void sendPlayerData(Connection *conn, int x, int y, unsigned int *action_counter
     }
 }
 
-void sendBombEvent(Connection *conn, int tile) {
+void sendBombEvent(int tile) {
     if(conn->connectionEstablished == 1){
         char buffer[100];
         sprintf(buffer, "%d %s %d", bomb_msg, conn->name, tile);
@@ -164,11 +165,13 @@ void sendBombEvent(Connection *conn, int tile) {
 }
 
 
-void closeConnection(Connection *conn) {
+void closeConnection() {
     conn->closeConnection = 1;
+    close(conn->socket);
     pthread_join(conn->thread, NULL);
 }
 
-void closeSocket(Connection *conn) {
+void closeSocket() {
     freeaddrinfo(conn->infoptr);
+    free(conn);
 }

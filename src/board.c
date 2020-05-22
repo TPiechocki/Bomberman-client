@@ -28,6 +28,8 @@ void initBoard(SDL_Window* window, int enemy_count){
 
     for(int i = 0; i < board->breakableIceBlocksCount; i++)
         board->breakableIceBlocks[i] = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+
+    board->startGame = 0;
 }
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
