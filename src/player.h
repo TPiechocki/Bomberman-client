@@ -29,6 +29,7 @@ typedef struct Player
 } Player;
 
 Player* player;
+pthread_mutex_t player_lock;
 
 void initPlayer(Board* board, int player_number, int x, int y);
 

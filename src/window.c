@@ -42,6 +42,9 @@ int init(){
 
     // Get window surface
     window->gScreenSurface = SDL_GetWindowSurface(window->gWindow);
+
+    pthread_mutex_init(&renderer_lock, NULL);
+
     return 0;
 }
 
@@ -54,7 +57,7 @@ void close_window(){
     SDL_DestroyWindow(window->gWindow);
     window->gWindow = NULL;
 
-
+    pthread_mutex_destroy(&renderer_lock);
 
     // Quit SDL subsystems
     SDL_Quit();

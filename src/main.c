@@ -28,8 +28,9 @@ int main(int argc, char* argv[]) {
         // Initialize Board data
         initBoard(window->gWindow, conn->player_count);
         // Loading board data
+        pthread_mutex_lock(&renderer_lock);
         loadBoard(window->gWindow, window->gRenderer);
-
+        pthread_mutex_unlock(&renderer_lock);
         // Initialize Player data
         //initPlayer(board);
         // Loading player data
@@ -38,7 +39,9 @@ int main(int argc, char* argv[]) {
         initAllBombs(4);
         initBomb(bombs[0]);
         // Loading bomb data
+        pthread_mutex_lock(&renderer_lock);
         loadBomb(bombs[0], window->gRenderer);
+        pthread_mutex_unlock(&renderer_lock);
 
         // Initialize Velocity Timer & Move Timer
         Timer vTimer;
@@ -64,8 +67,11 @@ int main(int argc, char* argv[]) {
                         window->run = SDL_FALSE;
                         break;
                     default:
-                        if(board->startGame == 1)
+                        if(board->startGame == 1) {
+                            pthread_mutex_lock(&renderer_lock);
                             handlePlayerEvent(&e, window->gRenderer, board, bombs[0]);
+                            pthread_mutex_unlock(&renderer_lock);
+                        }
                         break;
                 }
             }
@@ -81,7 +87,7 @@ int main(int argc, char* argv[]) {
                 stepY -= (int) player->y;
                 if (stepX != 0 || stepY != 0) {
                     // player moved, send to server
-                    // send not more often than 50 ms
+                    // send not more often than 0 ms
                     if (getTicksTimer(&moveTimer) >= 0.f) {
                         sendPlayerData((int) player->x, (int) player->y, &player->counter);
                         startTimer(&moveTimer);
@@ -95,6 +101,8 @@ int main(int argc, char* argv[]) {
                     for (int i = 0; i < conn->player_count - 1; i++)
                         moveEnemy(enemies[i]);
 
+
+                pthread_mutex_lock(&renderer_lock);
                 // Clearing renderer
                 SDL_RenderClear(window->gRenderer);
 
@@ -113,20 +121,21 @@ int main(int argc, char* argv[]) {
                 // Render enemies
                 if (conn->player_count > 1)
                     for (int i = 0; i < conn->player_count - 1; i++){
-                        pthread_mutex_lock(&enemy_lock);
                         renderEnemy(enemies[i], window->gRenderer);
-                        pthread_mutex_unlock(&enemy_lock);
                     }
                 // Render player
                 renderPlayer(window->gRenderer);
 
                 // Presenting data in renderer
                 SDL_RenderPresent(window->gRenderer);
+                pthread_mutex_unlock(&renderer_lock);
             }
             else{
+                pthread_mutex_lock(&renderer_lock);
                 SDL_RenderClear(window->gRenderer);
                 renderBoard(window->gRenderer);
                 SDL_RenderPresent(window->gRenderer);
+                pthread_mutex_unlock(&renderer_lock);
             }
         }
         // Freeing resources for rendered elements

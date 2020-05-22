@@ -6,6 +6,7 @@
 #define BOMBERMAN_CLIENT_WINDOW_H
 
 #include <SDL2/SDL.h>
+#include <pthread.h>
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -18,6 +19,7 @@ typedef struct SDLWindowStruct {
 }Window;
 
 Window* window;
+pthread_mutex_t renderer_lock;
 
 /**
  * Initializes window struct and SDL window.

@@ -27,7 +27,7 @@ void connectServer() {
 void *communication(void *args) {
     // get possible IPs of server
     while (conn->closeConnection == 0) {
-        int result = getaddrinfo("serveo.net", conn->port, &conn->hints, &conn->infoptr);
+        /*int result = getaddrinfo("serveo.net", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         }
@@ -45,11 +45,27 @@ void *communication(void *args) {
             }
 
             close(conn->socket);
+        }*/
+
+        struct sockaddr_in server;
+        conn->socket = socket(AF_INET , SOCK_STREAM , 0);
+        if (conn->socket == -1)
+        {
+            printf("Could not create socket");
+        }
+
+        server.sin_addr.s_addr = inet_addr("87.207.30.151");
+        server.sin_family = AF_INET;
+        server.sin_port = htons( 5000 );
+
+        if (connect(conn->socket, (struct sockaddr *)&server , sizeof(server)) < 0)
+        {
+            puts("connect error");
         }
         // none of possible addresses connected
-        if (conn->p == NULL) {
+        /*if (conn->p == NULL) {
             fprintf(stderr, "Could not find the server!\n");
-        }
+        }*/
         else {
 
             conn->connectionEstablished = 1;
@@ -74,7 +90,7 @@ void *communication(void *args) {
         }
     }
     fprintf(stdout, "Connection to server closed.");
-    // close(conn->socket);
+    close(conn->socket);
     return NULL;
 }
 
@@ -95,11 +111,15 @@ void decodeMessage(char *message) {
                 sscanf(buff_ptr, "%d %s %d %d\n%n",&player_number, name, &x, &y, &buff_length);
                 if (strcmp(name, conn->name) == 0) {
                     initPlayer(board, player_number, x, y);
+                    pthread_mutex_lock(&renderer_lock);
                     loadPlayer(window->gWindow, window->gRenderer);
+                    pthread_mutex_unlock(&renderer_lock);
                 }
                 else {
                     initEnemy(enemies[enemy_c], board, player_number, x, y, name);
+                    pthread_mutex_lock(&renderer_lock);
                     loadEnemy(window->gRenderer, enemies[enemy_c], enemy_c);
+                    pthread_mutex_unlock(&renderer_lock);
                     enemy_c++;
                 }
                 buff_ptr += buff_length;
@@ -171,11 +191,11 @@ void sendBombEvent(int tile) {
 
 void closeConnection() {
     conn->closeConnection = 1;
-    close(conn->socket);
+    //close(conn->socket);
     pthread_join(conn->thread, NULL);
 }
 
 void closeSocket() {
-    freeaddrinfo(conn->infoptr);
+    // freeaddrinfo(conn->infoptr);
     free(conn);
 }

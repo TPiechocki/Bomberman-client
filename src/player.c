@@ -7,6 +7,8 @@
 void initPlayer(Board *board,int player_number, int x, int y) {
     double tilesPerSecond = 3;
 
+    pthread_mutex_init(&player_lock, NULL);
+
     player = (Player*)malloc(sizeof(Player));
 
     player->velocity = tilesPerSecond * (double)board->length / board->size; // tile per second
@@ -59,8 +61,9 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer)
         printf("Blad przy wczytywaniu plikow!");
         return;
     }
-
+    pthread_mutex_lock(&player_lock);
     player->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    pthread_mutex_unlock(&player_lock);
     SDL_FreeSurface(surface);
 }
 
@@ -273,7 +276,9 @@ void movePlayer(Board* board, Bomb* bombs, double timeStep){
 
 void renderPlayer(SDL_Renderer *renderer) {
     //render player
+    pthread_mutex_lock(&player_lock); // LOCK
     SDL_RenderCopy(renderer, player->texture, NULL, &player->image);
+    pthread_mutex_unlock(&player_lock); // UNLOCK
 }
 
 void placeBombPlayer(Board *board, Bomb* bomb){
@@ -289,4 +294,5 @@ void closePlayer() {
     if(player->texture != NULL)
         SDL_DestroyTexture(player->texture);
     free(player);
+    pthread_mutex_destroy(&player_lock);
 }

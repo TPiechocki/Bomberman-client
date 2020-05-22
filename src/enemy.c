@@ -72,16 +72,16 @@ void loadEnemy(SDL_Renderer *renderer, Enemy *enemy, int player_number)
         printf("Blad przy wczytywaniu plikow!");
         return;
     }
-
+    pthread_mutex_lock(&enemy_lock); // LOCK
     enemy->texture = SDL_CreateTextureFromSurface(renderer, surface);
+    pthread_mutex_unlock(&enemy_lock); // UNLOCK
     SDL_FreeSurface(surface);
 }
 
 void moveEnemy(Enemy* enemy){
     // based off server messages
     // move enemy to next position given by server
-    // LOCK - alternative LOCK before for() for all enemies
-    pthread_mutex_lock(&enemy_lock);
+    pthread_mutex_lock(&enemy_lock); // LOCK
     if(enemy->stepCounter < 6)
     {
         enemy->x += enemy->stepX;
@@ -94,19 +94,20 @@ void moveEnemy(Enemy* enemy){
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
     // UNLOCK
-    pthread_mutex_unlock(&enemy_lock);
+    pthread_mutex_unlock(&enemy_lock); // UNLOCK
 }
 
 
 
 void renderEnemy(Enemy *enemy, SDL_Renderer *renderer) {
+    pthread_mutex_lock(&enemy_lock); // LOCK
     SDL_RenderCopy(renderer, enemy->texture, NULL, &enemy->image);
+    pthread_mutex_unlock(&enemy_lock); // UNLOCK
 }
 
 void closeEnemy(Enemy *enemy) {
     if(enemy->texture != NULL)
         SDL_DestroyTexture(enemy->texture);
-    //free(enemy);
 }
 
 void closeAllEnemies(int count){
