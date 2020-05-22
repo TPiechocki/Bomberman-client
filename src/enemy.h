@@ -20,6 +20,7 @@ typedef struct Enemy{
     int stepCounter;
     int stepX;
     int stepY;
+    int bombId;
     char name[100];
 } Enemy;
 
@@ -27,7 +28,7 @@ Enemy** enemies;
 pthread_mutex_t enemy_lock;
 
 void initAllEnemies(int count);
-void initEnemy(Enemy* enemy, Board* board, int player_number, int startX, int startY, char* name);
+void initEnemy(Enemy* enemy, Board* board, int player_number, int startX, int startY, char* name, int bombId);
 
 void loadEnemy( SDL_Renderer *renderer, Enemy *p, int player_number);
 

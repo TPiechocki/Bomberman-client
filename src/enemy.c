@@ -11,13 +11,15 @@ void initAllEnemies(int count){
     pthread_mutex_init(&enemy_lock, NULL);
 }
 
-void initEnemy(Enemy *enemy, Board *board, int player_number , int startX, int startY, char* name) {
+void initEnemy(Enemy *enemy, Board *board, int player_number , int startX, int startY, char* name, int bombId) {
 
     //enemy = (Enemy*)malloc(sizeof(Enemy));
     strcpy(enemy->name, name);
 
     enemy->image.w = board->length / board->size * 7 / 10;
     enemy->image.h = enemy->image.w;
+
+    enemy->bombId = bombId;
 
     if(startX == 0 || startY == 0)
     {
@@ -93,7 +95,7 @@ void moveEnemy(Enemy* enemy){
     //enemy->y = enemy->nextY;
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
-    // UNLOCK
+
     pthread_mutex_unlock(&enemy_lock); // UNLOCK
 }
 

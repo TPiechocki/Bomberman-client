@@ -4,7 +4,7 @@
 #include "player.h"
 
 
-void initPlayer(Board *board,int player_number, int x, int y) {
+void initPlayer(Board *board,int player_number, int x, int y, int bomb) {
     double tilesPerSecond = 3;
 
     pthread_mutex_init(&player_lock, NULL);
@@ -18,6 +18,7 @@ void initPlayer(Board *board,int player_number, int x, int y) {
     player->counter = 0;
     player->onBomb = 0;
     player->placedBomb = 0;
+    player->bombId = bomb;
 
     player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
@@ -287,6 +288,7 @@ void placeBombPlayer(Board *board, Bomb* bomb){
         placeBomb(bomb, board, player->current_tile);
         player->placedBomb = 1;
         player->onBomb = 1;
+        sendBombEvent(bomb->tile);
     }
 }
 

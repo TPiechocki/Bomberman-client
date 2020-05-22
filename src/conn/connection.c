@@ -25,8 +25,9 @@ void connectServer() {
 }
 
 void *communication(void *args) {
-    // get possible IPs of server
+
     while (conn->closeConnection == 0) {
+        // get possible IPs of server
         /*int result = getaddrinfo("serveo.net", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
@@ -110,15 +111,19 @@ void decodeMessage(char *message) {
                 int x, y;
                 sscanf(buff_ptr, "%d %s %d %d\n%n",&player_number, name, &x, &y, &buff_length);
                 if (strcmp(name, conn->name) == 0) {
-                    initPlayer(board, player_number, x, y);
+                    initPlayer(board, player_number, x, y, i);
+                    initBomb(bombs[i]);
                     pthread_mutex_lock(&renderer_lock);
                     loadPlayer(window->gWindow, window->gRenderer);
+                    loadBomb(bombs[i], window->gRenderer);
                     pthread_mutex_unlock(&renderer_lock);
                 }
                 else {
-                    initEnemy(enemies[enemy_c], board, player_number, x, y, name);
+                    initEnemy(enemies[enemy_c], board, player_number, x, y, name, i);
+                    initBomb(bombs[i]);
                     pthread_mutex_lock(&renderer_lock);
                     loadEnemy(window->gRenderer, enemies[enemy_c], enemy_c);
+                    loadBomb(bombs[i], window->gRenderer);
                     pthread_mutex_unlock(&renderer_lock);
                     enemy_c++;
                 }
@@ -131,8 +136,8 @@ void decodeMessage(char *message) {
         {
             if(board->startGame == 0)
                 break;
-            int playerc;
-            sscanf(buff_ptr, "%d\n%n", &playerc, &buff_length);
+            int playerc, tick_number;
+            sscanf(buff_ptr, "%d %d\n%n", &playerc, &tick_number, &buff_length);
             buff_ptr += buff_length;
             while(*buff_ptr){
                 char name[100];
@@ -159,6 +164,29 @@ void decodeMessage(char *message) {
             }
         }
         break;
+        case bombs_msg:
+        {
+            if(board->startGame == 0)
+                break;
+            int playerc, tic_number;
+            sscanf(buff_ptr, "%d %d\n%n", &playerc, &tic_number, &buff_length);
+            buff_ptr += buff_length;
+            while(*buff_ptr){
+                char name[100];
+                int tile_number, explode_tick;
+                sscanf(buff_ptr, "%s %d %d\n%n", name, &tile_number, &explode_tick, &buff_length);
+                if(strcmp(conn->name, name) == 0){
+                    buff_ptr += buff_length;
+                    continue;
+                }
+                for(int i = 0; i < conn->player_count - 1; i++){
+                    if(strcmp(name, enemies[i]->name) == 0);
+                }
+                buff_ptr += buff_length;
+            }
+
+        }
+        break;
         default: break;
     }
 }
@@ -183,7 +211,7 @@ void sendPlayerData(int x, int y, unsigned int *action_counter) {
 void sendBombEvent(int tile) {
     if(conn->connectionEstablished == 1){
         char buffer[100];
-        sprintf(buffer, "%d %s %d", bomb_msg, conn->name, tile);
+        sprintf(buffer, "%d %s %d\n", bomb_msg, conn->name, tile);
         send(conn->socket, buffer, strlen(buffer), 0);
     }
 }

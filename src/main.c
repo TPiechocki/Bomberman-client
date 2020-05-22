@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
         window->run = SDL_TRUE;
         // Initialize connection to server
         initAllEnemies(3);
+        initAllBombs(4);
         initConnection(argv[1], argv[2]); // name and port as user input
         connectServer();
         while (conn->connectionEstablished == 0); // wait for connection
@@ -30,17 +31,6 @@ int main(int argc, char* argv[]) {
         // Loading board data
         pthread_mutex_lock(&renderer_lock);
         loadBoard(window->gWindow, window->gRenderer);
-        pthread_mutex_unlock(&renderer_lock);
-        // Initialize Player data
-        //initPlayer(board);
-        // Loading player data
-        //loadPlayer(window->gWindow, window->gRenderer);
-
-        initAllBombs(4);
-        initBomb(bombs[0]);
-        // Loading bomb data
-        pthread_mutex_lock(&renderer_lock);
-        loadBomb(bombs[0], window->gRenderer);
         pthread_mutex_unlock(&renderer_lock);
 
         // Initialize Velocity Timer & Move Timer
@@ -140,15 +130,15 @@ int main(int argc, char* argv[]) {
         }
         // Freeing resources for rendered elements
         closeConnection();
-        closeSocket();
         if(board->startGame == 1)
         {
             closePlayer(&player);
-            for(int i  = 0; i < conn->player_count-1; i++){
+            for(int i  = 0; i < conn->player_count-1; i++)
                 closeEnemy(enemies[i]);
-            }
+            for(int i = 0; i < conn->player_count; i++)
+                closeBomb(bombs[i]);
         }
-        closeBomb(bombs[0]);
+        closeSocket();
         closeAllBombs(4);
         closeBoard();
         closeAllEnemies(3);

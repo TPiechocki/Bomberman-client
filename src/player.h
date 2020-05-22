@@ -26,12 +26,13 @@ typedef struct Player
     double velocity;
     double velX;
     double velY;
+    int bombId;
 } Player;
 
 Player* player;
 pthread_mutex_t player_lock;
 
-void initPlayer(Board* board, int player_number, int x, int y);
+void initPlayer(Board* board, int player_number, int x, int y, int bomb);
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player texture
 
