@@ -27,7 +27,7 @@ void connectServer() {
 void *communication(void *args) {
     // get possible IPs of server
     while (conn->closeConnection == 0) {
-        int result = getaddrinfo("2.tcp.eu.ngrok.io", conn->port, &conn->hints, &conn->infoptr);
+        int result = getaddrinfo("serveo.net", conn->port, &conn->hints, &conn->infoptr);
         if (result) {
             fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(result));
         }
@@ -124,13 +124,15 @@ void decodeMessage(char *message) {
                 }
                 for(int i = 0; i < conn->player_count - 1; i++){
                     if(strcmp(name, enemies[i]->name) == 0){
-                        pthread_mutex_lock(&enemy_lock);
-                        enemies[i]->nextX = x;
-                        enemies[i]->nextY = y;
-                        enemies[i]->stepX = (enemies[i]->nextX - enemies[i]->x) / 6;
-                        enemies[i]->stepY = (enemies[i]->nextY - enemies[i]->y) / 6;
-                        enemies[i]->stepCounter = 0;
-                        pthread_mutex_unlock(&enemy_lock);
+                        if(x != 0 && y != 0){
+                            pthread_mutex_lock(&enemy_lock);
+                            enemies[i]->nextX = x;
+                            enemies[i]->nextY = y;
+                            enemies[i]->stepX = (enemies[i]->nextX - enemies[i]->x) / 6;
+                            enemies[i]->stepY = (enemies[i]->nextY - enemies[i]->y) / 6;
+                            enemies[i]->stepCounter = 0;
+                            pthread_mutex_unlock(&enemy_lock);
+                        }
                     }
                 }
                 buff_ptr += buff_length;

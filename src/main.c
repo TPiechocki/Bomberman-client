@@ -50,6 +50,10 @@ int main(int argc, char* argv[]) {
 
         // Event handler
         SDL_Event e;
+
+        printf("Waiting for other players...\n");
+
+        // Main event loop
         while (window->run) {
             // Event polling queue
             while (SDL_PollEvent(&e) != 0){
@@ -108,9 +112,11 @@ int main(int argc, char* argv[]) {
                 }
                 // Render enemies
                 if (conn->player_count > 1)
-                    for (int i = 0; i < conn->player_count - 1; i++)
+                    for (int i = 0; i < conn->player_count - 1; i++){
+                        pthread_mutex_lock(&enemy_lock);
                         renderEnemy(enemies[i], window->gRenderer);
-
+                        pthread_mutex_unlock(&enemy_lock);
+                    }
                 // Render player
                 renderPlayer(window->gRenderer);
 
@@ -124,7 +130,8 @@ int main(int argc, char* argv[]) {
             }
         }
         // Freeing resources for rendered elements
-
+        closeConnection();
+        closeSocket();
         if(board->startGame == 1)
         {
             closePlayer(&player);
@@ -135,8 +142,6 @@ int main(int argc, char* argv[]) {
         closeBomb(bombs[0]);
         closeAllBombs(4);
         closeBoard();
-        closeConnection();
-        closeSocket();
         closeAllEnemies(3);
     }
     // Free resources and close SDL

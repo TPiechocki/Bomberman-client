@@ -3,7 +3,6 @@
 //
 #include "player.h"
 
-Player* player;
 
 void initPlayer(Board *board,int player_number, int x, int y) {
     double tilesPerSecond = 3;

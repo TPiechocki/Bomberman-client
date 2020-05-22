@@ -54,6 +54,8 @@ void close_window(){
     SDL_DestroyWindow(window->gWindow);
     window->gWindow = NULL;
 
+
+
     // Quit SDL subsystems
     SDL_Quit();
     free(window);
