@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
     else {
         window->run = SDL_TRUE;
         // Initialize connection to server
-        initAllEnemies(4);
+        initAllEnemies(3);
         initConnection(argv[1], argv[2]); // name and port as user input
         connectServer();
         while (conn->connectionEstablished == 0); // wait for connection
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
         closeBoard();
         closeConnection();
         closeSocket();
-        closeAllEnemies(4);
+        closeAllEnemies(3);
     }
     // Free resources and close SDL
     close_window();

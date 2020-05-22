@@ -30,7 +30,7 @@ typedef struct Player
 
 Player* player;
 
-void initPlayer(Board* board, int x, int y);
+void initPlayer(Board* board, int player_number, int x, int y);
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player texture
 

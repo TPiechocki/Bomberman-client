@@ -12,6 +12,7 @@
 #define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
 #define BREAKABLE_ICE_BLOCK_SPRITE_PATH "./../sprites/Breakable_ice_block.jpg"
 
+
 typedef struct board_struct{
     int start_x;
     int start_y;

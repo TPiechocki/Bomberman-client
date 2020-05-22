@@ -97,7 +97,9 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
             }
 
             else if((i == 0 && (j == 0 || j == 1)) || (i == 1 && j == 0) || (i == board->size - 2 && j == board->size -1)
-            || (i == board->size - 1 && (j == board->size - 1 || j == board->size - 2)))
+            || (i == board->size - 1 && (j == board->size - 1 || j == board->size - 2)) ||
+            (i == 0 && (j == board->size - 1 || j == board->size - 2)) || (i == 1 && j == board->size - 1 ) ||
+            ((i == board->size - 2 || i == board->size - 1 ) && j == 0) || (i == board->size - 1 && j == 1))
                 continue;
 
             else{

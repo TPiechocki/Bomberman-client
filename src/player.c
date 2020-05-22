@@ -5,7 +5,7 @@
 
 Player* player;
 
-void initPlayer(Board *board, int x, int y) {
+void initPlayer(Board *board,int player_number, int x, int y) {
     double tilesPerSecond = 3;
 
     player = (Player*)malloc(sizeof(Player));
@@ -20,9 +20,33 @@ void initPlayer(Board *board, int x, int y) {
 
     player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
-    // positioning in the middle of top left tile
-    player->x = x;
-    player->y = y;
+
+    if(x == 0 || y == 0)
+    {
+        switch(player_number){
+            case 0:
+                player->x = board->start_x + board->tile_length / 2;
+                player->y = board->start_y + board->tile_length / 2;
+                break;
+            case 1:
+                player->x = board->end_x - board->tile_length / 2;
+                player->y = board->end_y - board->tile_length / 2;
+                break;
+            case 2:
+                player->x = board->start_x + board->tile_length / 2;
+                player->y = board->end_y - board->tile_length / 2;
+                break;
+            case 3:
+                player->x = board->end_x - board->tile_length / 2;
+                player->y = board->start_y + board->tile_length / 2;
+                break;
+        }
+    }
+    else
+    {
+        player->x = x;
+        player->y = y;
+    }
     player->image.x = (int)player->x - player->image.w / 2;
     player->image.y = (int)player->y - player->image.w / 2;
     player->current_tile = ((int)(player->y - board->start_y) / board->tile_length) * board->size

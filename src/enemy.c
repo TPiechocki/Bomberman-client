@@ -5,13 +5,13 @@
 
 void initAllEnemies(int count){
     enemies = (Enemy**)malloc(sizeof(Enemy*)*count);
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < count; i++){
         enemies[i] = (Enemy*)malloc(sizeof(Enemy));
     }
     pthread_mutex_init(&enemy_lock, NULL);
 }
 
-void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
+void initEnemy(Enemy *enemy, Board *board, int player_number , int startX, int startY, char* name) {
 
     //enemy = (Enemy*)malloc(sizeof(Enemy));
     strcpy(enemy->name, name);
@@ -19,8 +19,32 @@ void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
     enemy->image.w = board->length / board->size * 7 / 10;
     enemy->image.h = enemy->image.w;
 
-    enemy->x = startX;
-    enemy->y = startY;
+    if(startX == 0 || startY == 0)
+    {
+        switch(player_number){
+            case 0:
+                enemy->x = board->start_x + board->tile_length / 2;
+                enemy->y = board->start_y + board->tile_length / 2;
+                break;
+            case 1:
+                enemy->x = board->end_x - board->tile_length / 2;
+                enemy->y = board->end_y - board->tile_length / 2;
+                break;
+            case 2:
+                enemy->x = board->start_x + board->tile_length / 2;
+                enemy->y = board->end_y - board->tile_length / 2;
+                break;
+            case 3:
+                enemy->x = board->end_x - board->tile_length / 2;
+                enemy->y = board->start_y + board->tile_length / 2;
+                break;
+        }
+    }
+    else
+    {
+        enemy->x = startX;
+        enemy->y = startY;
+    }
     enemy->nextX = enemy->x;
     enemy->nextY = enemy->y;
     enemy->image.x = enemy->x - enemy->image.w / 2;
@@ -28,9 +52,22 @@ void initEnemy(Enemy *enemy, Board *board, int startX, int startY, char* name) {
     enemy->stepCounter = 6;
 }
 
-void loadEnemy(SDL_Renderer *renderer, Enemy *enemy)
+void loadEnemy(SDL_Renderer *renderer, Enemy *enemy, int player_number)
 {
-    SDL_Surface *surface = IMG_Load("./../sprites/enemy.png");
+    SDL_Surface *surface;
+    switch (player_number) {
+        case 0:
+            surface = IMG_Load("./../sprites/enemy.png");
+            break;
+        case 1:
+            surface = IMG_Load("./../sprites/enemy.png");
+            break;
+        case 2:
+            surface = IMG_Load("./../sprites/enemy.png");
+            break;
+        default:
+            break;
+    }
     if(surface == NULL) {
         printf("Blad przy wczytywaniu plikow!");
         return;

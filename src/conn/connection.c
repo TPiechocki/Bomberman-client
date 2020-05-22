@@ -55,7 +55,7 @@ void *communication(void *args) {
             conn->connectionEstablished = 1;
             fprintf(stdout, "Connection stable.\n");
 
-            sendName(conn);
+            sendName();
 
             char buffer[1024];
             // receive info from socket
@@ -86,20 +86,20 @@ void decodeMessage(char *message) {
     switch (msg) {
         case start_msg: {
             int enemy_c = 0;
+            int player_number;
             sscanf(buff_ptr, "%d\n%n", &conn->player_count, &buff_length);
             buff_ptr += buff_length;
             for (int i = 0; i < conn->player_count; i++) {
                 char name[100];
                 int x, y;
-                sscanf(buff_ptr, "%s %d %d\n%n", name, &x, &y, &buff_length);
+                sscanf(buff_ptr, "%d %s %d %d\n%n",&player_number, name, &x, &y, &buff_length);
                 if (strcmp(name, conn->name) == 0) {
-                    // place player on proper space
-                    initPlayer(board, board->start_x + board->tile_length / 2, board->start_y + board->tile_length / 2);
+                    initPlayer(board, player_number, x, y);
                     loadPlayer(window->gWindow, window->gRenderer);
                 }
                 else {
-                    initEnemy(enemies[enemy_c], board, x, y, name);
-                    loadEnemy(window->gRenderer, enemies[enemy_c]);
+                    initEnemy(enemies[enemy_c], board, player_number, x, y, name);
+                    loadEnemy(window->gRenderer, enemies[enemy_c], enemy_c);
                     enemy_c++;
                 }
                 buff_ptr += buff_length;
@@ -109,6 +109,8 @@ void decodeMessage(char *message) {
         break;
         case players_msg:
         {
+            if(board->startGame == 0)
+                break;
             int playerc;
             sscanf(buff_ptr, "%d\n%n", &playerc, &buff_length);
             buff_ptr += buff_length;
