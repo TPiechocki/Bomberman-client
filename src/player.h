@@ -27,6 +27,7 @@ typedef struct Player
     double velX;
     double velY;
     int bombId;
+    int isAlive;
 } Player;
 
 Player* player;
@@ -38,6 +39,8 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player te
 
 void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board, Bomb* bomb);
 void movePlayer(Board* board, Bomb* bombs, double timeStep);
+
+void getAllTiles(int x, int y);
 
 void placeBombPlayer(Board *board, Bomb* bomb);
 

@@ -22,6 +22,7 @@ typedef struct Enemy{
     int stepY;
     int bombId;
     char name[100];
+    int isAlive;
 } Enemy;
 
 Enemy** enemies;

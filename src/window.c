@@ -45,6 +45,8 @@ int init(){
 
     pthread_mutex_init(&renderer_lock, NULL);
 
+    TTF_Init();
+
     return 0;
 }
 
@@ -58,6 +60,8 @@ void close_window(){
     window->gWindow = NULL;
 
     pthread_mutex_destroy(&renderer_lock);
+
+    TTF_Quit();
 
     // Quit SDL subsystems
     SDL_Quit();

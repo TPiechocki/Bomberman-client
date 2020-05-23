@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         // Event handler
         SDL_Event e;
 
-        printf("Waiting for other players...\n");
+        // printf("Waiting for other players...\n");
 
         // Main event loop
         while (window->run) {
@@ -67,6 +67,7 @@ int main(int argc, char* argv[]) {
             }
 
             if(board->startGame == 1) {
+
                 // Calculate time step -> ms -> s
                 double timeStep = getTicksTimer(&vTimer) / 1000.f;
                 int stepX = (int) player->x;
@@ -108,6 +109,7 @@ int main(int argc, char* argv[]) {
                     hideBomb(bombs[0]);
                     player->placedBomb = 0;
                 }
+
                 // Render enemies
                 if (conn->player_count > 1)
                     for (int i = 0; i < conn->player_count - 1; i++){

@@ -168,8 +168,8 @@ void decodeMessage(char *message) {
         {
             if(board->startGame == 0)
                 break;
-            int playerc, tic_number;
-            sscanf(buff_ptr, "%d %d\n%n", &playerc, &tic_number, &buff_length);
+            int playerc, tick_number;
+            sscanf(buff_ptr, "%d %d\n%n", &playerc, &tick_number, &buff_length);
             buff_ptr += buff_length;
             while(*buff_ptr){
                 char name[100];

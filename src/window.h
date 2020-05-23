@@ -6,6 +6,7 @@
 #define BOMBERMAN_CLIENT_WINDOW_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <pthread.h>
 
 #define WINDOW_WIDTH 1280

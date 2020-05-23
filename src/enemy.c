@@ -52,6 +52,7 @@ void initEnemy(Enemy *enemy, Board *board, int player_number , int startX, int s
     enemy->image.x = enemy->x - enemy->image.w / 2;
     enemy->image.y = enemy->y - enemy->image.w / 2;
     enemy->stepCounter = 6;
+    enemy->isAlive = 1;
 }
 
 void loadEnemy(SDL_Renderer *renderer, Enemy *enemy, int player_number)

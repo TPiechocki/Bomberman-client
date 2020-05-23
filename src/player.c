@@ -14,6 +14,7 @@ void initPlayer(Board *board,int player_number, int x, int y, int bomb) {
     player->velocity = tilesPerSecond * (double)board->length / board->size; // tile per second
     player->velX = 0;
     player->velY = 0;
+    player->isAlive = 1;
 
     player->counter = 0;
     player->onBomb = 0;
@@ -53,6 +54,23 @@ void initPlayer(Board *board,int player_number, int x, int y, int bomb) {
     player->image.y = (int)player->y - player->image.w / 2;
     player->current_tile = ((int)(player->y - board->start_y) / board->tile_length) * board->size
                            + ((player->x - board->start_x) / board->tile_length);
+}
+
+void getAllTiles(int x, int y){
+    int corners[4];
+    // left top
+    corners[0] = ((y - 41 - 40 / 2) / 58) * 11
+                 + ((x - 321 - 40 / 2) / 58);
+    // right top
+    corners[1] = ((y - 41 - 40 / 2) / 58) * 11
+                 + ((x - 321 + 40 / 2 - 1) / 58);
+    // right bottom
+    corners[2] = ((y - 41 + 40 / 2 - 1) / 58) * 11
+                 + ((x - 321 + 40 / 2 - 1) / 58);
+    // left bottom
+    corners[3] = ((y - 41 + 40 / 2 - 1) / 58) * 11
+                 + ((x - 321 - 40 / 2) / 58);
+
 }
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer)
