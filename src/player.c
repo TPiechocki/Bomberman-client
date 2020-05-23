@@ -99,7 +99,7 @@ void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Bomb*
             case SDLK_s: player->velY += player->velocity; break;
             case SDLK_a: player->velX -= player->velocity; break;
             case SDLK_d: player->velX += player->velocity; break;
-            case SDLK_SPACE: placeBombPlayer(board, bomb); break;
+          //  case SDLK_SPACE: placeBombPlayer(board, bomb); break;
         }
     }
     else if( e->type == SDL_KEYUP && e->key.repeat == 0){

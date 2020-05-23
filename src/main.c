@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
                 pthread_mutex_lock(&renderer_lock);
                 SDL_RenderClear(window->gRenderer);
                 renderBoard(window->gRenderer);
+                renderWaitingMessage();
                 SDL_RenderPresent(window->gRenderer);
                 pthread_mutex_unlock(&renderer_lock);
             }

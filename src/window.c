@@ -50,6 +50,22 @@ int init(){
     return 0;
 }
 
+void renderWaitingMessage(){
+    TTF_Font* sans = TTF_OpenFont("../sprites/OpenSans-Regular.ttf", 200);
+    char* text = "Waiting for players to join...";
+    SDL_Color textColor = {0, 0, 0};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
+
+    SDL_Rect textRect = {100, 100, WINDOW_WIDTH - 200, 200};
+
+    SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
+
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(sans);
+}
+
 void close_window(){
     // Destroy renderer
     SDL_DestroyRenderer(window->gRenderer);

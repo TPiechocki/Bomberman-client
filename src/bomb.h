@@ -16,6 +16,7 @@ typedef struct bomb_struct{
   int range;
   int placed;
   int exploded;
+  int explodeTick;
   Timer* timer;
   SDL_Texture* bombTexture;
   SDL_Texture* explVerTexture;

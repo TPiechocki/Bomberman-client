@@ -28,6 +28,8 @@ pthread_mutex_t renderer_lock;
  */
 int init();
 
+void renderWaitingMessage();
+
 /**
  * Clears resources and closes SDL window.
  */
