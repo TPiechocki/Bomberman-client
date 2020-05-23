@@ -37,12 +37,12 @@ void initPlayer(Board* board, int player_number, int x, int y, int bomb);
 
 void loadPlayer(SDL_Window *window, SDL_Renderer *renderer); //Loading player texture
 
-void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board, Bomb* bomb);
-void movePlayer(Board* board, Bomb* bombs, double timeStep);
+void handlePlayerEvent(SDL_Event* e, SDL_Renderer *renderer, Board *board);
+void movePlayer(Board* board, double timeStep);
 
 void getAllTiles(int x, int y);
 
-void placeBombPlayer(Board *board, Bomb* bomb);
+void placeBombPlayer(Board *board);
 
 void renderPlayer(SDL_Renderer* renderer);
 

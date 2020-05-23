@@ -44,8 +44,6 @@ int main(int argc, char* argv[]) {
         // Event handler
         SDL_Event e;
 
-        // printf("Waiting for other players...\n");
-
         // Main event loop
         while (window->run) {
             // Event polling queue
@@ -59,7 +57,7 @@ int main(int argc, char* argv[]) {
                     default:
                         if(board->startGame == 1) {
                             pthread_mutex_lock(&renderer_lock);
-                            handlePlayerEvent(&e, window->gRenderer, board, bombs[0]);
+                            handlePlayerEvent(&e, window->gRenderer, board);
                             pthread_mutex_unlock(&renderer_lock);
                         }
                         break;
@@ -73,7 +71,7 @@ int main(int argc, char* argv[]) {
                 int stepX = (int) player->x;
                 int stepY = (int) player->y;
                 // Moving player
-                movePlayer(board, bombs[0], timeStep);
+                movePlayer(board, timeStep);
                 stepX -= (int) player->x;
                 stepY -= (int) player->y;
                 if (stepX != 0 || stepY != 0) {
@@ -92,6 +90,7 @@ int main(int argc, char* argv[]) {
                     for (int i = 0; i < conn->player_count - 1; i++)
                         moveEnemy(enemies[i]);
 
+                //getAllTiles(player->x, player->y);
 
                 pthread_mutex_lock(&renderer_lock);
                 // Clearing renderer
@@ -99,16 +98,21 @@ int main(int argc, char* argv[]) {
 
                 // Render board
                 renderBoard(window->gRenderer);
-
-                if (bombs[0]->placed == 1)
-                    renderBomb(bombs[0], window->gRenderer);
-                checkForExplosion(bombs[0], board);
-                if (bombs[0]->exploded == 1)
-                    renderExplosion(bombs[0], window->gRenderer);
-                if (bombs[0]->exploded == 1 && getTicksTimer(bombs[0]->timer) >= 2000.f) {
-                    hideBomb(bombs[0]);
-                    player->placedBomb = 0;
+                pthread_mutex_lock(&bombs_lock);
+                for(int i = 0; i < 4; i++){
+                    if (bombs[i]->placed == 1)
+                        renderBomb(bombs[i], window->gRenderer);
+                    checkForExplosion(bombs[i], board);
+                    if (bombs[i]->exploded == 1)
+                        renderExplosion(bombs[i], window->gRenderer);
+                    if (bombs[i]->exploded == 1 && getTicksTimer(bombs[i]->timer) >= 500.f) {
+                        hideBomb(bombs[i]);
+                        if(player->bombId == i)
+                            player->placedBomb = 0;
+                    }
                 }
+                pthread_mutex_unlock(&bombs_lock);
+
 
                 // Render enemies
                 if (conn->player_count > 1)
@@ -117,6 +121,8 @@ int main(int argc, char* argv[]) {
                     }
                 // Render player
                 renderPlayer(window->gRenderer);
+
+                //renderKillMessage();
 
                 // Presenting data in renderer
                 SDL_RenderPresent(window->gRenderer);

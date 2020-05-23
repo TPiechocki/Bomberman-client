@@ -74,7 +74,7 @@ void *communication(void *args) {
 
             sendName();
 
-            char buffer[1024];
+            char buffer[2048];
             // receive info from socket
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
                 printf("%s\n", buffer);
@@ -135,8 +135,8 @@ void decodeMessage(char *message) {
             case players_msg: {
                 if (board->startGame == 0)
                     break;
-                int playerc, tick_number;
-                sscanf(buff_ptr, "%d %d\n%n", &playerc, &tick_number, &buff_length);
+                int playerc;
+                sscanf(buff_ptr, "%d\n%n", &playerc, &buff_length);
                 buff_ptr += buff_length;
                 for(int i = 0; i < playerc; i++) {
                     char name[100];
@@ -172,21 +172,24 @@ void decodeMessage(char *message) {
                     break;
                 int bombsc, tick_number;
                 sscanf(buff_ptr, "%d %d\n%n", &bombsc, &tick_number, &buff_length);
+                actualTick = tick_number;
                 buff_ptr += buff_length;
                 for(int i = 0; i < bombsc; i++) {
                     char name[100];
                     int tile_number, explode_tick;
                     sscanf(buff_ptr, "%s %d %d\n%n", name, &tile_number, &explode_tick, &buff_length);
                     if (strcmp(conn->name, name) == 0) {
-                        placeBomb((bombs[player->bombId]), board, tile_number);
-                        bombs[player->bombId]->explodeTick = explode_tick;
+                        pthread_mutex_lock(&bombs_lock);
+                        placeBomb((bombs[player->bombId]), board, tile_number, explode_tick);
+                        pthread_mutex_unlock(&bombs_lock);
                         buff_ptr += buff_length;
                         continue;
                     }
                     for (int i = 0; i < conn->player_count - 1; i++) {
                         if (strcmp(name, enemies[i]->name) == 0){
-                            placeBomb((bombs[enemies[i]->bombId]), board, tile_number);
-                            bombs[enemies[i]->bombId]->explodeTick = explode_tick;
+                            pthread_mutex_lock(&bombs_lock);
+                            placeBomb((bombs[enemies[i]->bombId]), board, tile_number, explode_tick);
+                            pthread_mutex_unlock(&bombs_lock);
                         }
                     }
                     buff_ptr += buff_length;

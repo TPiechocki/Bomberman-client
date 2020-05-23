@@ -86,7 +86,7 @@ void loadPlayer(SDL_Window *window, SDL_Renderer *renderer)
     SDL_FreeSurface(surface);
 }
 
-void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Bomb* bomb) {
+void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board) {
     // If key was pressed
     if( e->type == SDL_KEYDOWN && e->key.repeat == 0){
         // Adjust velocity (start moving)
@@ -99,7 +99,7 @@ void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Bomb*
             case SDLK_s: player->velY += player->velocity; break;
             case SDLK_a: player->velX -= player->velocity; break;
             case SDLK_d: player->velX += player->velocity; break;
-          //  case SDLK_SPACE: placeBombPlayer(board, bomb); break;
+            case SDLK_SPACE: placeBombPlayer(board); break;
         }
     }
     else if( e->type == SDL_KEYUP && e->key.repeat == 0){
@@ -118,7 +118,7 @@ void handlePlayerEvent(SDL_Event *e, SDL_Renderer *renderer, Board *board, Bomb*
     }
 }
 
-void movePlayer(Board* board, Bomb* bombs, double timeStep){
+void movePlayer(Board* board, double timeStep){
     // Scale for diagonal movement
     double scale = 1.;
     // If the diagonal movement occurs, scale it down
@@ -247,43 +247,51 @@ void movePlayer(Board* board, Bomb* bombs, double timeStep){
         }
     }
 
+    int onBomb = 0;
     // check if player went out of bomb
-    if(player->placedBomb && !SDL_HasIntersection(&collide, &bombs->bombRect))
+    for(int i = 0; i < 4; i++)
+        if(SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
+            onBomb += 1;
+        }
+    if(onBomb == 0) {
         player->onBomb = 0;
+    }
 
     // collision with bomb
-    if(player->placedBomb && !player->onBomb && SDL_HasIntersection(&collide, &bombs->bombRect)){
-        double temp[2][2];
-        for (int j = 0; j < 2; ++j) {
-            temp[j][0] = 0.0f;
-        }
+    for(int i = 0; i < 4; i++) {
+        if (!player->onBomb && SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
+            double temp[2][2];
+            for (int j = 0; j < 2; ++j) {
+                temp[j][0] = 0.0f;
+            }
 
-        // player is on the left side of the bomb
-        if(player->x >= bombs->bombRect.x - player->image.w / 2 && player->velX > 0.0f) {
-            temp[0][0] = fabs(player->x - (bombs->bombRect.x - player->image.w / 2));
-            temp[0][1] = bombs->bombRect.x - player->image.w / 2;
-        }
-        // player is on the right side of the bomb
-        if(player->x <= bombs->bombRect.x + bombs->bombRect.w + player->image.w / 2 && player->velX < 0.0f) {
-            temp[0][0] = fabs(player->x - (bombs->bombRect.x + bombs->bombRect.w + player->image.w / 2));
-            temp[0][1] = bombs->bombRect.x + bombs->bombRect.w + player->image.w / 2;
-        }
-        // player above the bomb
-        if(player->y >= bombs->bombRect.y - player->image.h / 2 && player->velY > 0.0f) {
-            temp[1][0] = fabs(player->y - (bombs->bombRect.y - player->image.h / 2));
-            temp[1][1] = bombs->bombRect.y- player->image.h / 2;
-        }
-        // player below the bomb
-        if(player->y <= bombs->bombRect.y + bombs->bombRect.w + player->image.w / 2 && player->velY < 0.0f) {
-            temp[1][0] = fabs(player->y - (bombs->bombRect.y+ bombs->bombRect.w + player->image.w / 2));
-            temp[1][1] = bombs->bombRect.y + bombs->bombRect.h + player->image.h / 2;
-        }
+            // player is on the left side of the bomb
+            if (player->x >= bombs[i]->bombRect.x - player->image.w / 2 && player->velX > 0.0f) {
+                temp[0][0] = fabs(player->x - (bombs[i]->bombRect.x - player->image.w / 2));
+                temp[0][1] = bombs[i]->bombRect.x - player->image.w / 2;
+            }
+            // player is on the right side of the bomb
+            if (player->x <= bombs[i]->bombRect.x + bombs[i]->bombRect.w + player->image.w / 2 && player->velX < 0.0f) {
+                temp[0][0] = fabs(player->x - (bombs[i]->bombRect.x + bombs[i]->bombRect.w + player->image.w / 2));
+                temp[0][1] = bombs[i]->bombRect.x + bombs[i]->bombRect.w + player->image.w / 2;
+            }
+            // player above the bomb
+            if (player->y >= bombs[i]->bombRect.y - player->image.h / 2 && player->velY > 0.0f) {
+                temp[1][0] = fabs(player->y - (bombs[i]->bombRect.y - player->image.h / 2));
+                temp[1][1] = bombs[i]->bombRect.y - player->image.h / 2;
+            }
+            // player below the bomb
+            if (player->y <= bombs[i]->bombRect.y + bombs[i]->bombRect.w + player->image.w / 2 && player->velY < 0.0f) {
+                temp[1][0] = fabs(player->y - (bombs[i]->bombRect.y + bombs[i]->bombRect.w + player->image.w / 2));
+                temp[1][1] = bombs[i]->bombRect.y + bombs[i]->bombRect.h + player->image.h / 2;
+            }
 
-        // choose collision with smaller delta and use proper callback
-        if (temp[1][0] == 0 || (temp[0][0] != 0 && temp[0][0] <= temp[1][0]))
-            player->x = temp[0][1];
-        else
-            player->y = temp[1][1];
+            // choose collision with smaller delta and use proper callback
+            if (temp[1][0] == 0 || (temp[0][0] != 0 && temp[0][0] <= temp[1][0]))
+                player->x = temp[0][1];
+            else
+                player->y = temp[1][1];
+        }
     }
     // assign new coords if they didn't go out of bounds
     player->image.x = (int)player->x - player->image.w / 2;
@@ -300,13 +308,13 @@ void renderPlayer(SDL_Renderer *renderer) {
     pthread_mutex_unlock(&player_lock); // UNLOCK
 }
 
-void placeBombPlayer(Board *board, Bomb* bomb){
+void placeBombPlayer(Board *board){
     // send to server message about bomb placement
     if(player->placedBomb == 0) {
-        placeBomb(bomb, board, player->current_tile);
+    //    placeBomb(bomb, board, player->current_tile);
         player->placedBomb = 1;
         player->onBomb = 1;
-        sendBombEvent(bomb->tile);
+        sendBombEvent(player->current_tile);
     }
 }
 

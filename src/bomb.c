@@ -17,6 +17,7 @@ void initAllBombs(int count){
 void initBomb(Bomb *bomb) {
     //bomb = (Bomb*)malloc(sizeof(Bomb));
 
+    bomb->explodeTick = -1;
     bomb->tile = -1;
     bomb->placed = 0;
     bomb->exploded = 0;
@@ -52,15 +53,18 @@ void loadBomb(Bomb *bomb, SDL_Renderer* renderer) {
     SDL_FreeSurface(centerSurface);
 }
 
-void placeBomb(Bomb *bomb, Board* board, int tile) {
+void placeBomb(Bomb *bomb, Board* board, int tile, int explodeTick) {
     bomb->placed = 1;
     bomb->tile = tile;
 
+    bomb->explodeTick = explodeTick;
     bomb->bombRect.w = board->length/ board->size / 2;
     bomb->bombRect.h = bomb->bombRect.w;
     bomb->bombRect.x = (tile % board->size) * board->tile_length + board->start_x + board->tile_length / 4;
     bomb->bombRect.y = (tile / board->size) * board->tile_length + board->start_y + board->tile_length / 4;
-    startTimer(bomb->timer);
+
+    if(SDL_HasIntersection(&bomb->bombRect, &player->image))
+        player->onBomb = 1;
 }
 
 void hideBomb(Bomb *bomb) {
@@ -73,9 +77,10 @@ void hideBomb(Bomb *bomb) {
 }
 
 void checkForExplosion(Bomb *bomb, Board* board) {
-    if(bomb->placed == 1 && getTicksTimer(bomb->timer) >= 1000.f && bomb->exploded == 0){
+    if(bomb->placed == 1 && actualTick>= bomb->explodeTick && bomb->exploded == 0){
         bomb->exploded = 1;
         explode(bomb, board);
+        startTimer(bomb->timer);
     }
 }
 
