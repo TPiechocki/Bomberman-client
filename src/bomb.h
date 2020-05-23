@@ -17,7 +17,9 @@ typedef struct bomb_struct{
   int range;
   int placed;
   int exploded;
+  int underPlayer;
   int explodeTick;
+  int endOfExplosionTick;
   Timer* timer;
   SDL_Texture* bombTexture;
   SDL_Texture* explVerTexture;
@@ -28,14 +30,13 @@ typedef struct bomb_struct{
   SDL_Rect centerRect;
 }Bomb;
 
-int actualTick;
 Bomb** bombs;
 pthread_mutex_t bombs_lock;
 
 void initAllBombs(int count);
 void initBomb(Bomb* bomb);
 void loadBomb(Bomb* bomb, SDL_Renderer* renderer);
-void placeBomb(Bomb* bomb, Board* board, int tile, int explodeTick);
+void placeBomb(Bomb* bomb, Board* board, int tile, int explodeTick, int endOfExplosionTick);
 void hideBomb(Bomb* bomb);
 
 void checkForExplosion(Bomb* bomb, Board* board);

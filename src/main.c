@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
                         window->run = SDL_FALSE;
                         break;
                     default:
-                        if(board->startGame == 1) {
+                        if(board->startGame == 1 && player->isAlive) {
                             pthread_mutex_lock(&renderer_lock);
                             handlePlayerEvent(&e, window->gRenderer, board);
                             pthread_mutex_unlock(&renderer_lock);
@@ -66,29 +66,32 @@ int main(int argc, char* argv[]) {
 
             if(board->startGame == 1) {
 
-                // Calculate time step -> ms -> s
-                double timeStep = getTicksTimer(&vTimer) / 1000.f;
-                int stepX = (int) player->x;
-                int stepY = (int) player->y;
-                // Moving player
-                movePlayer(board, timeStep);
-                stepX -= (int) player->x;
-                stepY -= (int) player->y;
-                if (stepX != 0 || stepY != 0) {
-                    // player moved, send to server
-                    // send not more often than 0 ms
-                    if (getTicksTimer(&moveTimer) >= 0.f) {
-                        sendPlayerData((int) player->x, (int) player->y, &player->counter);
-                        startTimer(&moveTimer);
+                if(player->isAlive) {
+                    // Calculate time step -> ms -> s
+                    double timeStep = getTicksTimer(&vTimer) / 1000.f;
+                    int stepX = (int) player->x;
+                    int stepY = (int) player->y;
+                    // Moving player
+                    movePlayer(board, timeStep);
+                    stepX -= (int) player->x;
+                    stepY -= (int) player->y;
+                    if (stepX != 0 || stepY != 0) {
+                        // player moved, send to server
+                        // send not more often than 0 ms
+                        if (getTicksTimer(&moveTimer) >= 0.f) {
+                            sendPlayerData((int) player->x, (int) player->y, &player->counter);
+                            startTimer(&moveTimer);
+                        }
                     }
+                    // Restart step timer / velocity timer
+                    startTimer(&vTimer);
                 }
-                // Restart step timer / velocity timer
-                startTimer(&vTimer);
 
                 // Move enemies
                 if (conn->player_count > 1)
                     for (int i = 0; i < conn->player_count - 1; i++)
-                        moveEnemy(enemies[i]);
+                        if(enemies[i]->isAlive)
+                            moveEnemy(enemies[i]);
 
                 //getAllTiles(player->x, player->y);
 
@@ -105,11 +108,13 @@ int main(int argc, char* argv[]) {
                     checkForExplosion(bombs[i], board);
                     if (bombs[i]->exploded == 1)
                         renderExplosion(bombs[i], window->gRenderer);
-                    if (bombs[i]->exploded == 1 && getTicksTimer(bombs[i]->timer) >= 500.f) {
+                    pthread_mutex_lock(&tick_lock);
+                    if (bombs[i]->exploded == 1 && bombs[i]->endOfExplosionTick < actualTick) {
                         hideBomb(bombs[i]);
                         if(player->bombId == i)
                             player->placedBomb = 0;
                     }
+                    pthread_mutex_unlock(&tick_lock);
                 }
                 pthread_mutex_unlock(&bombs_lock);
 
@@ -117,12 +122,24 @@ int main(int argc, char* argv[]) {
                 // Render enemies
                 if (conn->player_count > 1)
                     for (int i = 0; i < conn->player_count - 1; i++){
-                        renderEnemy(enemies[i], window->gRenderer);
+                        if(enemies[i]->isAlive) {
+                            renderEnemy(enemies[i], window->gRenderer);
+                            renderName(enemies[i]->name, enemies[i]->image.x, enemies[i]->image.y);
+                        }
                     }
-                // Render player
-                renderPlayer(window->gRenderer);
 
-                //renderKillMessage();
+
+
+                if(player->isAlive == 0)
+                    renderKillMessage();
+                else {
+                    // Render player
+                    renderPlayer(window->gRenderer);
+                    renderName(conn->name, player->image.x, player->image.y);
+                }
+
+                if(player->isAlive && !checkEnemyLives() && conn->player_count > 1)
+                    renderWinMessage();
 
                 // Presenting data in renderer
                 SDL_RenderPresent(window->gRenderer);

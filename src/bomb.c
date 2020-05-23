@@ -16,7 +16,8 @@ void initAllBombs(int count){
 
 void initBomb(Bomb *bomb) {
     //bomb = (Bomb*)malloc(sizeof(Bomb));
-
+    
+    bomb->underPlayer = 0;
     bomb->explodeTick = -1;
     bomb->tile = -1;
     bomb->placed = 0;
@@ -53,18 +54,22 @@ void loadBomb(Bomb *bomb, SDL_Renderer* renderer) {
     SDL_FreeSurface(centerSurface);
 }
 
-void placeBomb(Bomb *bomb, Board* board, int tile, int explodeTick) {
+void placeBomb(Bomb *bomb, Board* board, int tile, int explodeTick, int endOfExplosionTick) {
     bomb->placed = 1;
     bomb->tile = tile;
 
     bomb->explodeTick = explodeTick;
+    bomb->endOfExplosionTick = endOfExplosionTick;
     bomb->bombRect.w = board->length/ board->size / 2;
     bomb->bombRect.h = bomb->bombRect.w;
     bomb->bombRect.x = (tile % board->size) * board->tile_length + board->start_x + board->tile_length / 4;
     bomb->bombRect.y = (tile / board->size) * board->tile_length + board->start_y + board->tile_length / 4;
 
-    if(SDL_HasIntersection(&bomb->bombRect, &player->image))
+
+    if(SDL_HasIntersection(&bomb->bombRect, &player->image)){
         player->onBomb = 1;
+        bomb->underPlayer = 1;
+    }
 }
 
 void hideBomb(Bomb *bomb) {
@@ -77,11 +82,13 @@ void hideBomb(Bomb *bomb) {
 }
 
 void checkForExplosion(Bomb *bomb, Board* board) {
+    pthread_mutex_lock(&tick_lock);
     if(bomb->placed == 1 && actualTick>= bomb->explodeTick && bomb->exploded == 0){
         bomb->exploded = 1;
         explode(bomb, board);
         startTimer(bomb->timer);
     }
+    pthread_mutex_unlock(&tick_lock);
 }
 
 void explode(Bomb* bomb, Board* board){
@@ -136,8 +143,8 @@ void explode(Bomb* bomb, Board* board){
         //right side collide with breakable ice block - destroying it
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&right, board->breakableIceBlocks[j])){
+                right.w -= board->tile_length;
                 collision = 1;
-                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -172,8 +179,8 @@ void explode(Bomb* bomb, Board* board){
         //down side collide with breakable ice block - destroying it
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&down, board->breakableIceBlocks[j])){
+                down.h -= board->tile_length;
                 collision = 1;
-                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -210,8 +217,9 @@ void explode(Bomb* bomb, Board* board){
         //upper side collide with breakable ice block - destroying it
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&up, board->breakableIceBlocks[j])){
+                up.y += board->tile_length;
+                up.h -= board->tile_length;
                 collision = 1;
-                destroyBreakableIceBlock(j);
                 break;
             }
         }
@@ -250,8 +258,9 @@ void explode(Bomb* bomb, Board* board){
         //right side collide with breakable ice block - destroying it
         for(int j = 0; j < board->breakableIceBlocksCount; j++){
             if(SDL_HasIntersection(&left, board->breakableIceBlocks[j])){
+                left.x += board->tile_length;
+                left.w -= board->tile_length;
                 collision = 1;
-                destroyBreakableIceBlock(j);
                 break;
             }
         }

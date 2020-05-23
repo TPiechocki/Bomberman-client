@@ -23,13 +23,16 @@ void initBoard(SDL_Window* window, int enemy_count){
     board->length = board->end_x - board->start_x;
     board->tile_length = board->length / board->size;
     board->iceBlocksCount = 25;
-    board->breakableIceBlocksCount = 90;
+    board->breakableIceBlocksCount = 121;
     board->enemy_count = enemy_count;
 
-    for(int i = 0; i < board->breakableIceBlocksCount; i++)
-        board->breakableIceBlocks[i] = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+    for(int i = 0; i < board->breakableIceBlocksCount; i++){
+        board->breakableIceBlocks[i] = NULL;
+    }
+
 
     board->startGame = 0;
+    pthread_mutex_init(&board_lock, NULL);
 }
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
@@ -95,24 +98,27 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
                 board->iceBlocks[index].y = i * tile_length + board->start_y;
                 index++;
             }
-
-            //Don't render blocks on start positions
-            else if((i == 0 && (j == 0 || j == 1)) || (i == 1 && j == 0) || (i == board->size - 2 && j == board->size -1)
-            || (i == board->size - 1 && (j == board->size - 1 || j == board->size - 2)) ||
-            (i == 0 && (j == board->size - 1 || j == board->size - 2)) || (i == 1 && j == board->size - 1 ) ||
-            ((i == board->size - 2 || i == board->size - 1 ) && j == 0) || (i == board->size - 1 && j == 1))
-                continue;
-
-            else{
-                board->breakableIceBlocks[ind]->w = 0.8 * tile_length;
-                board->breakableIceBlocks[ind]->h = 0.8 *tile_length;
-                board->breakableIceBlocks[ind]->x = j * tile_length + board->start_x + 0.1 * tile_length;
-                board->breakableIceBlocks[ind]->y = i * tile_length + board->start_y + 0.1 * tile_length;
-                ind++;
-            }
         }
     }
+}
 
+void loadBreakable(char* status){
+    pthread_mutex_lock(&board_lock);
+    for(int i = 0; i < 121; i++){
+        if(((i % board->size) % 2) == 1 && ((i / board->size) %2) == 1)
+            continue;
+        if(status[i] && board->breakableIceBlocks[i] == NULL) {
+            board->breakableIceBlocks[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
+
+            board->breakableIceBlocks[i]->w = 0.8 * board->tile_length;
+            board->breakableIceBlocks[i]->h = 0.8 * board->tile_length;
+            board->breakableIceBlocks[i]->x = (i % board->size) * board->tile_length + board->start_x + 0.1 * board->tile_length;
+            board->breakableIceBlocks[i]->y = (i / board->size) * board->tile_length + board->start_y + 0.1 * board->tile_length;
+        }
+        else if (!status[i] && board->breakableIceBlocks[i] != NULL)
+            destroyBreakableIceBlock(i);
+    }
+    pthread_mutex_unlock(&board_lock);
 }
 
 void renderOutsideWalls(SDL_Renderer *renderer) {
@@ -142,18 +148,20 @@ void renderChessBoard(SDL_Renderer* renderer){
 void renderIceBlocks(SDL_Renderer *renderer) {
     for(int i = 0; i < 25; i++)
         SDL_RenderCopy(renderer, board->iceBlockTexture, NULL, &board->iceBlocks[i]);
-    for(int i = 0; i < 90; i++)
+    for(int i = 0; i < 121; i++)
         if(board->breakableIceBlocks[i] != NULL)
             SDL_RenderCopy(renderer, board->breakableIceBlockTexture, NULL, board->breakableIceBlocks[i]);
 }
 
 void renderBoard(SDL_Renderer *renderer) {
+    pthread_mutex_lock(&board_lock);
     // Render arena outside walls / colour outside of arena
     renderOutsideWalls(renderer);
     // Render Chessboard pattern
     renderChessBoard(renderer);
     // Render ice blocks
     renderIceBlocks(renderer);
+    pthread_mutex_unlock(&board_lock);
 }
 
 void destroyBreakableIceBlock(int index){
@@ -172,5 +180,6 @@ void closeBoard() {
         if(board->breakableIceBlocks[i] != NULL)
             free(board->breakableIceBlocks[i]);
     free(board);
+    pthread_mutex_destroy(&board_lock);
 }
 

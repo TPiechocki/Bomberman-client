@@ -34,6 +34,7 @@ void initEnemy(Enemy* enemy, Board* board, int player_number, int startX, int st
 void loadEnemy( SDL_Renderer *renderer, Enemy *p, int player_number);
 
 void moveEnemy(Enemy* enemy);
+int checkEnemyLives();
 
 void renderEnemy(Enemy* enemy, SDL_Renderer* renderer);
 

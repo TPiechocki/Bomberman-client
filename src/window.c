@@ -68,12 +68,43 @@ void renderWaitingMessage(){
 
 void renderKillMessage(){
     TTF_Font* sans = TTF_OpenFont("../sprites/Walter.ttf", 200);
-    char* text = "YOU DIED";
+    char* text = "You Died";
     SDL_Color textColor = {125, 0, 0};
     SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
 
-    SDL_Rect textRect = {100, 100, WINDOW_WIDTH - 200, 200};
+    SDL_Rect textRect = {200, 100, WINDOW_WIDTH - 400, 200};
+
+    SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
+
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(sans);
+}
+
+void renderWinMessage(){
+    TTF_Font* sans = TTF_OpenFont("../sprites/OptimusPrincepsSemiBold.ttf", 200);
+    char* text = "You won!";
+    SDL_Color textColor = {0, 125, 0};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
+
+    SDL_Rect textRect = {200, 100, WINDOW_WIDTH - 400, 200};
+
+    SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
+
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    TTF_CloseFont(sans);
+}
+
+void renderName(char *name, int x, int y) {
+    TTF_Font* sans = TTF_OpenFont("../sprites/OpenSans-Regular.ttf", 50);
+    SDL_Color textColor = {0, 0, 0};
+    SDL_Surface* textSurface = TTF_RenderText_Solid(sans, name, textColor);
+    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
+
+    SDL_Rect textRect = {x, y - 30, strlen(name)*10, 25};
 
     SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
 

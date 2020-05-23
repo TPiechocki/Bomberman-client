@@ -7,6 +7,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <pthread.h>
 
 #define OUTSIDE_WALL_SPRITE_PATH "./../sprites/Wall.png"
 #define ICE_WALL_SPRITE_PATH "./../sprites/Ice_block.png"
@@ -26,7 +27,7 @@ typedef struct board_struct{
     SDL_Texture *breakableIceBlockTexture;
     SDL_Rect outsideWalls[4];
     SDL_Rect iceBlocks[25];
-    SDL_Rect *breakableIceBlocks[90];
+    SDL_Rect *breakableIceBlocks[121];
     int iceBlocksCount;
     int breakableIceBlocksCount;
     int enemy_count;
@@ -35,10 +36,12 @@ typedef struct board_struct{
 } Board;
 
 Board* board;
+pthread_mutex_t board_lock;
 
 void initBoard(SDL_Window* window, int enemy_count);
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer);
+void loadBreakable(char* status);
 
 void renderBoard(SDL_Renderer* renderer);
 

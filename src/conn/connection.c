@@ -7,6 +7,7 @@
 void initConnection(char *name, char *port) {
     conn = (Connection*)malloc(sizeof(Connection));
 
+    pthread_mutex_init(&tick_lock, NULL);
     memset(&conn->hints, 0, sizeof(conn->hints));
     conn->hints.ai_family = AF_INET;
     conn->hints.ai_socktype = SOCK_STREAM;
@@ -152,7 +153,7 @@ void decodeMessage(char *message) {
                     for (int i = 0; i < conn->player_count - 1; i++) {
                         if (strcmp(name, enemies[i]->name) == 0) {
                             pthread_mutex_lock(&enemy_lock);
-                            enemies[i]->isAlive = 0;
+                            enemies[i]->isAlive = isAlive;
                             if (x != 0 && y != 0) {
                                 enemies[i]->nextX = x;
                                 enemies[i]->nextY = y;
@@ -172,15 +173,17 @@ void decodeMessage(char *message) {
                     break;
                 int bombsc, tick_number;
                 sscanf(buff_ptr, "%d %d\n%n", &bombsc, &tick_number, &buff_length);
+                pthread_mutex_lock(&tick_lock);
                 actualTick = tick_number;
+                pthread_mutex_unlock(&tick_lock);
                 buff_ptr += buff_length;
                 for(int i = 0; i < bombsc; i++) {
                     char name[100];
-                    int tile_number, explode_tick;
-                    sscanf(buff_ptr, "%s %d %d\n%n", name, &tile_number, &explode_tick, &buff_length);
+                    int tile_number, explode_tick, end_of_explosion_tick;
+                    sscanf(buff_ptr, "%s %d %d %d\n%n", name, &tile_number, &explode_tick, &end_of_explosion_tick, &buff_length);
                     if (strcmp(conn->name, name) == 0) {
                         pthread_mutex_lock(&bombs_lock);
-                        placeBomb((bombs[player->bombId]), board, tile_number, explode_tick);
+                        placeBomb((bombs[player->bombId]), board, tile_number, explode_tick, end_of_explosion_tick);
                         pthread_mutex_unlock(&bombs_lock);
                         buff_ptr += buff_length;
                         continue;
@@ -188,13 +191,22 @@ void decodeMessage(char *message) {
                     for (int i = 0; i < conn->player_count - 1; i++) {
                         if (strcmp(name, enemies[i]->name) == 0){
                             pthread_mutex_lock(&bombs_lock);
-                            placeBomb((bombs[enemies[i]->bombId]), board, tile_number, explode_tick);
+                            placeBomb((bombs[enemies[i]->bombId]), board, tile_number, explode_tick, end_of_explosion_tick);
                             pthread_mutex_unlock(&bombs_lock);
                         }
                     }
                     buff_ptr += buff_length;
                 }
-
+            }
+                break;
+            case walls_msg:
+            {
+                char walls[121];
+                for(int i = 0; i < 121; i++){
+                    sscanf(buff_ptr, "%d %n", &walls[i], &buff_length);
+                    buff_ptr += buff_length;
+                }
+                loadBreakable(walls);
             }
                 break;
             default:
@@ -238,4 +250,5 @@ void closeConnection() {
 void closeSocket() {
     // freeaddrinfo(conn->infoptr);
     free(conn);
+    pthread_mutex_destroy(&tick_lock);
 }

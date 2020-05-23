@@ -247,19 +247,18 @@ void movePlayer(Board* board, double timeStep){
         }
     }
 
-    int onBomb = 0;
     // check if player went out of bomb
-    for(int i = 0; i < 4; i++)
-        if(SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
-            onBomb += 1;
+    for(int i = 0; i < 4; i++) {
+        if (!SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
+            pthread_mutex_lock(&bombs_lock);
+            bombs[i]->underPlayer = 0;
+            pthread_mutex_unlock(&bombs_lock);
         }
-    if(onBomb == 0) {
-        player->onBomb = 0;
     }
 
     // collision with bomb
     for(int i = 0; i < 4; i++) {
-        if (!player->onBomb && SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
+        if (!bombs[i]->underPlayer && SDL_HasIntersection(&collide, &bombs[i]->bombRect)) {
             double temp[2][2];
             for (int j = 0; j < 2; ++j) {
                 temp[j][0] = 0.0f;

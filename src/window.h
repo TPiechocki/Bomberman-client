@@ -30,6 +30,8 @@ int init();
 
 void renderWaitingMessage();
 void renderKillMessage();
+void renderWinMessage();
+void renderName(char* name, int x, int y);
 
 /**
  * Clears resources and closes SDL window.

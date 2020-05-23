@@ -26,6 +26,7 @@ typedef enum Messages_ids{
     end_msg,
     players_msg,
     bombs_msg,
+    walls_msg,
 }MSG;
 
 typedef struct connection_manager_struct{
@@ -40,6 +41,9 @@ typedef struct connection_manager_struct{
     pthread_t thread;
     int player_count;
 }Connection;
+
+pthread_mutex_t tick_lock;
+int actualTick;
 
 Connection* conn;
 

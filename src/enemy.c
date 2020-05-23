@@ -100,6 +100,12 @@ void moveEnemy(Enemy* enemy){
     pthread_mutex_unlock(&enemy_lock); // UNLOCK
 }
 
+int checkEnemyLives(){
+    for(int i = 0; i < conn->player_count - 1; i++)
+        if(enemies[i]->isAlive)
+            return 1;
+    return 0;
+}
 
 
 void renderEnemy(Enemy *enemy, SDL_Renderer *renderer) {
