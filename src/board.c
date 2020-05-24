@@ -163,8 +163,10 @@ void renderBoard(SDL_Renderer *renderer) {
 }
 
 void destroyBreakableIceBlock(int index){
-    free(board->breakableIceBlocks[index]);
-    board->breakableIceBlocks[index] = NULL;
+    if(board->breakableIceBlocks[index] != NULL) {
+        free(board->breakableIceBlocks[index]);
+        board->breakableIceBlocks[index] = NULL;
+    }
 }
 
 void closeBoard() {

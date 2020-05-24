@@ -4,7 +4,7 @@
 
 #include "connection.h"
 
-void initConnection(char *name, char *port) {
+void initConnection(char *name/*, char *port*/) {
     conn = (Connection*)malloc(sizeof(Connection));
 
     pthread_mutex_init(&tick_lock, NULL);
@@ -15,7 +15,7 @@ void initConnection(char *name, char *port) {
     conn->hints.ai_protocol = 0;
 
     conn->name = name;
-    conn->port = port;
+    /*conn->port = port;*/
     conn->closeConnection = 0;
     conn->connectionEstablished = 0;
     conn->player_count = 1;

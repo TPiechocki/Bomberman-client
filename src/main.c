@@ -9,8 +9,8 @@
 
 
 int main(int argc, char* argv[]) {
-    if(argc < 3) {
-        fprintf(stderr, "Missing player name and/or port number\n");
+    if(argc < 2) {
+        fprintf(stderr, "Missing player name\n");
         return -1;
     }
     // Initialize window
@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         // Initialize connection to server
         initAllEnemies(3);
         initAllBombs(4);
-        initConnection(argv[1], argv[2]); // name and port as user input
+        initConnection(argv[1]/*, argv[2]*/); // name and port as user input
         connectServer();
         while (conn->connectionEstablished == 0); // wait for connection
 

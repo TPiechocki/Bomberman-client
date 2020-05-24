@@ -48,7 +48,7 @@ int actualTick;
 
 Connection* conn;
 
-void initConnection(char* name, char* port);
+void initConnection(char* name/*, char* port*/);
 
 void connectServer();
 void* communication(void* args);
