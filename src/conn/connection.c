@@ -113,14 +113,18 @@ void decodeMessage(char *message) {
                     int x, y;
                     sscanf(buff_ptr, "%d %s %d %d\n%n", &player_number, name, &x, &y, &buff_length);
                     if (strcmp(name, conn->name) == 0) {
+                        pthread_mutex_lock(&player_lock);
                         initPlayer(board, player_number, x, y, i);
+                        pthread_mutex_unlock(&player_lock);
                         initBomb(bombs[i]);
                         pthread_mutex_lock(&renderer_lock);
                         loadPlayer(window->gWindow, window->gRenderer);
                         loadBomb(bombs[i], window->gRenderer);
                         pthread_mutex_unlock(&renderer_lock);
                     } else {
+                        pthread_mutex_lock(&enemy_lock);
                         initEnemy(enemies[enemy_c], board, player_number, x, y, name, i);
+                        pthread_mutex_unlock(&enemy_lock);
                         initBomb(bombs[i]);
                         pthread_mutex_lock(&renderer_lock);
                         loadEnemy(window->gRenderer, enemies[enemy_c], enemy_c);
