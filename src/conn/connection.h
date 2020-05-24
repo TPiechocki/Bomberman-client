@@ -27,6 +27,7 @@ typedef enum Messages_ids{
     players_msg,
     bombs_msg,
     walls_msg,
+    destroy_msg,
 }MSG;
 
 typedef struct connection_manager_struct{
@@ -53,10 +54,14 @@ void connectServer();
 void* communication(void* args);
 void decodeMessage(char* message);
 
+void decodeStartMsg(char* buff_ptr, char* buff_length);
+void decodePlayersMsg(char* buff_ptr, char* buff_length);
+void decodeBombsMsg(char* buff_ptr, char* buff_length);
+void decodeWallsMsg(char* buff_ptr, char* buff_length);
+
 void sendName();
 void sendPlayerData(int x, int y, unsigned int* action_counter);
 void sendBombEvent(int tile);
-
 
 void closeConnection();
 void closeSocket();

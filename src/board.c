@@ -115,8 +115,6 @@ void loadBreakable(char* status){
             board->breakableIceBlocks[i]->x = (i % board->size) * board->tile_length + board->start_x + 0.1 * board->tile_length;
             board->breakableIceBlocks[i]->y = (i / board->size) * board->tile_length + board->start_y + 0.1 * board->tile_length;
         }
-        else if (!status[i] && board->breakableIceBlocks[i] != NULL)
-            destroyBreakableIceBlock(i);
     }
     pthread_mutex_unlock(&board_lock);
 }

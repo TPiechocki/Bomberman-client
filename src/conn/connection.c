@@ -201,12 +201,27 @@ void decodeMessage(char *message) {
                 break;
             case walls_msg:
             {
-                char walls[121];
-                for(int i = 0; i < 121; i++){
-                    sscanf(buff_ptr, "%d %n", &walls[i], &buff_length);
+                char status[121];
+                for(int i = 0; i < 121; i++) {
+                    sscanf(buff_ptr, "%d %n", &status[i], &buff_length);
                     buff_ptr += buff_length;
                 }
-                loadBreakable(walls);
+                loadBreakable(status);
+            }
+                break;
+            case destroy_msg:
+            {
+                int wallc;
+                sscanf(buff_ptr, "%d\n%n", &wallc, &buff_length);
+                buff_ptr += buff_length;
+                pthread_mutex_lock(&board_lock);
+                for(int i = 0; i < wallc; i++){
+                    int index;
+                    sscanf(buff_ptr, "%d %n", &index, &buff_length);
+                    destroyBreakableIceBlock(index);
+                    buff_ptr += buff_length;
+                }
+                pthread_mutex_unlock(&board_lock);
             }
                 break;
             default:

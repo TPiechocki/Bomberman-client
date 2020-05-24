@@ -23,8 +23,6 @@ void initBomb(Bomb *bomb) {
     bomb->placed = 0;
     bomb->exploded = 0;
     bomb->range = 2; // 2 tiles from bomb in each direction are affected
-    bomb->timer = (Timer*)malloc(sizeof(Timer));
-    initTimer(bomb->timer);
 }
 
 void loadBomb(Bomb *bomb, SDL_Renderer* renderer) {
@@ -78,7 +76,6 @@ void hideBomb(Bomb *bomb) {
     bomb->tile = -1;
     bomb->bombRect.w = 0;
     bomb->bombRect.h = 0;
-    stopTimer(bomb->timer);
 }
 
 void checkForExplosion(Bomb *bomb, Board* board) {
@@ -86,7 +83,6 @@ void checkForExplosion(Bomb *bomb, Board* board) {
     if(bomb->placed == 1 && actualTick>= bomb->explodeTick && bomb->exploded == 0){
         bomb->exploded = 1;
         explode(bomb, board);
-        startTimer(bomb->timer);
     }
     pthread_mutex_unlock(&tick_lock);
 }
@@ -305,7 +301,6 @@ void closeBomb(Bomb *bomb) {
     SDL_DestroyTexture(bomb->explHorTexture);
     SDL_DestroyTexture(bomb->explVerTexture);
     SDL_DestroyTexture(bomb->centerTexture);
-    free(bomb->timer);
     //free(bomb);
 }
 

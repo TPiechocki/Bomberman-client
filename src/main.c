@@ -101,6 +101,8 @@ int main(int argc, char* argv[]) {
 
                 // Render board
                 renderBoard(window->gRenderer);
+
+                // bomb rendering and explosions
                 pthread_mutex_lock(&bombs_lock);
                 for(int i = 0; i < 4; i++){
                     if (bombs[i]->placed == 1)
@@ -128,8 +130,7 @@ int main(int argc, char* argv[]) {
                         }
                     }
 
-
-
+                // render loose message on death
                 if(player->isAlive == 0)
                     renderKillMessage();
                 else {
