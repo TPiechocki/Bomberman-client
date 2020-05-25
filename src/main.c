@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
         // Initialize connection to server
         initConnection(argv[1]/*, argv[2]*/); // name and port as user input
         connectServer();
-        // while (conn->connectionEstablished == 0); // wait for connection
+        while (conn->connectionEstablished == 0); // wait for connection
 
         // Initialize Board data
         initBoard(window->gWindow);
@@ -168,6 +168,7 @@ int main(int argc, char* argv[]) {
         }
         closeConnStruct();
         closeBoard();
+        closePlayer();
         closeAllBombs(4);
         closeAllEnemies(3);
     }
