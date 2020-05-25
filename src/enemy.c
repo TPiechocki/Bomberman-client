@@ -120,9 +120,11 @@ void closeEnemy(Enemy *enemy) {
 }
 
 void closeAllEnemies(int count){
+    // deallocate each enemy
     for(int i = 0; i < count; i++){
         free(enemies[i]);
     }
+    // deallocate handle
     free(enemies);
     pthread_mutex_destroy(&enemy_lock);
 }

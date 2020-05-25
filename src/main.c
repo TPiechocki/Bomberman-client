@@ -19,15 +19,16 @@ int main(int argc, char* argv[]) {
     }
     else {
         window->run = SDL_TRUE;
-        // Initialize connection to server
+        // allocate memory for bombs and enemies
         initAllEnemies(3);
         initAllBombs(4);
+        // Initialize connection to server
         initConnection(argv[1]/*, argv[2]*/); // name and port as user input
         connectServer();
-        while (conn->connectionEstablished == 0); // wait for connection
+        // while (conn->connectionEstablished == 0); // wait for connection
 
         // Initialize Board data
-        initBoard(window->gWindow, conn->player_count);
+        initBoard(window->gWindow);
         // Loading board data
         pthread_mutex_lock(&renderer_lock);
         loadBoard(window->gWindow, window->gRenderer);
@@ -165,9 +166,9 @@ int main(int argc, char* argv[]) {
             for(int i = 0; i < conn->player_count; i++)
                 closeBomb(bombs[i]);
         }
-        closeSocket();
-        closeAllBombs(4);
+        closeConnStruct();
         closeBoard();
+        closeAllBombs(4);
         closeAllEnemies(3);
     }
     // Free resources and close SDL

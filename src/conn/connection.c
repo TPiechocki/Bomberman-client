@@ -49,6 +49,7 @@ void *communication(void *args) {
             close(conn->socket);
         }*/
 
+        // create socket
         struct sockaddr_in server;
         conn->socket = socket(AF_INET , SOCK_STREAM , 0);
         if (conn->socket == -1)
@@ -60,6 +61,7 @@ void *communication(void *args) {
         server.sin_family = AF_INET;
         server.sin_port = htons( 5000 );
 
+        // try to connect to server
         if (connect(conn->socket, (struct sockaddr *)&server , sizeof(server)) < 0)
         {
             puts("connect error");
@@ -69,21 +71,25 @@ void *communication(void *args) {
             fprintf(stderr, "Could not find the server!\n");
         }*/
         else {
+            // connection successful
 
             conn->connectionEstablished = 1;
             fprintf(stdout, "Connection stable.\n");
 
+            // send name to server
             sendName();
 
             char buffer[2048];
-            // receive info from socket
+            // receive information from server
             while (recv(conn->socket, buffer, sizeof(buffer), 0) > 0 && conn->closeConnection == 0) {
-                printf("%s\n", buffer);
+                //printf("%s\n", buffer);
                 // decode message from server
                 decodeMessage(buffer);
+                // clear buffer
                 memset(buffer, 0, sizeof(buffer));
             }
         }
+        // connection lost or couldn't connect
         conn->connectionEstablished = 0;
         if(conn->closeConnection == 0) {
             fprintf(stderr, "Connection lost, attempting reconnect...\n");
@@ -97,22 +103,28 @@ void *communication(void *args) {
 }
 
 void decodeMessage(char *message) {
+    // msg - id of message
     int msg, buff_length;
     char* buff_ptr = message;
+    // loop till end of message
     while(*buff_ptr) {
+        // get msg id
         sscanf(buff_ptr, "%d%n", &msg, &buff_length);
         buff_ptr += buff_length;
         switch (msg) {
             case start_msg: {
                 int enemy_c = 0;
                 int player_number;
+                // get player count
                 sscanf(buff_ptr, "%d\n%n", &conn->player_count, &buff_length);
                 buff_ptr += buff_length;
                 for (int i = 0; i < conn->player_count; i++) {
                     char name[100];
                     int x, y;
+                    // read player number, name and starting positions
                     sscanf(buff_ptr, "%d %s %d %d\n%n", &player_number, name, &x, &y, &buff_length);
                     if (strcmp(name, conn->name) == 0) {
+                        // initialise player and their bomb
                         pthread_mutex_lock(&player_lock);
                         initPlayer(board, player_number, x, y, i);
                         pthread_mutex_unlock(&player_lock);
@@ -122,6 +134,7 @@ void decodeMessage(char *message) {
                         loadBomb(bombs[i], window->gRenderer);
                         pthread_mutex_unlock(&renderer_lock);
                     } else {
+                        // initialise enemy and their bomb
                         pthread_mutex_lock(&enemy_lock);
                         initEnemy(enemies[enemy_c], board, player_number, x, y, name, i);
                         pthread_mutex_unlock(&enemy_lock);
@@ -134,6 +147,7 @@ void decodeMessage(char *message) {
                     }
                     buff_ptr += buff_length;
                 }
+                // start game signal
                 board->startGame = 1;
             }
                 break;
@@ -141,6 +155,7 @@ void decodeMessage(char *message) {
                 if (board->startGame == 0)
                     break;
                 int playerc;
+                // amount of players to check in message
                 sscanf(buff_ptr, "%d\n%n", &playerc, &buff_length);
                 buff_ptr += buff_length;
                 for(int i = 0; i < playerc; i++) {
@@ -266,7 +281,7 @@ void closeConnection() {
     pthread_join(conn->thread, NULL);
 }
 
-void closeSocket() {
+void closeConnStruct() {
     // freeaddrinfo(conn->infoptr);
     free(conn);
     pthread_mutex_destroy(&tick_lock);

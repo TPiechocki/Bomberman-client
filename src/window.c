@@ -43,6 +43,7 @@ int init(){
     // Get window surface
     window->gScreenSurface = SDL_GetWindowSurface(window->gWindow);
 
+    // Initialise mutex
     pthread_mutex_init(&renderer_lock, NULL);
 
     TTF_Init();
@@ -51,63 +52,78 @@ int init(){
 }
 
 void renderWaitingMessage(){
+    // Choosing font
     TTF_Font* sans = TTF_OpenFont("../sprites/OpenSans-Regular.ttf", 200);
     char* text = "Waiting for players to join...";
+    // Choosing text colour - black
     SDL_Color textColor = {0, 0, 0};
+    // Creating texture from the text
     SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
 
+    // Bounding box of the text
     SDL_Rect textRect = {100, 100, WINDOW_WIDTH - 200, 200};
 
+    // Rendering text
     SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
 
+    // Freeing resources
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
     TTF_CloseFont(sans);
 }
 
 void renderKillMessage(){
+    // Choosing font
     TTF_Font* sans = TTF_OpenFont("../sprites/Walter.ttf", 200);
     char* text = "You Died";
+    // Choosing text colour - dark red
     SDL_Color textColor = {125, 0, 0};
+    // Creating texture from the text
     SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
-
+    // Bounding box of the text
     SDL_Rect textRect = {200, 100, WINDOW_WIDTH - 400, 200};
-
+    // Rendering text
     SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
-
+    // Freeing resources
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
     TTF_CloseFont(sans);
 }
 
 void renderWinMessage(){
+    // Choosing font
     TTF_Font* sans = TTF_OpenFont("../sprites/OptimusPrincepsSemiBold.ttf", 200);
     char* text = "You won!";
+    // Choosing text colour - dark green
     SDL_Color textColor = {0, 125, 0};
+    // Creating texture from the text
     SDL_Surface* textSurface = TTF_RenderText_Solid(sans, text, textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
-
+    // Bounding box of the text
     SDL_Rect textRect = {200, 100, WINDOW_WIDTH - 400, 200};
-
+    // Rendering text
     SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
-
+    // Freeing resources
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
     TTF_CloseFont(sans);
 }
 
 void renderName(char *name, int x, int y) {
+    // Choosing font
     TTF_Font* sans = TTF_OpenFont("../sprites/OpenSans-Regular.ttf", 50);
+    // Choosing text colour - black
     SDL_Color textColor = {0, 0, 0};
+    // Creating texture from the text
     SDL_Surface* textSurface = TTF_RenderText_Solid(sans, name, textColor);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(window->gRenderer, textSurface);
-
+    // Bounding box of the name, 30 pixels above so it doesn't overlap
     SDL_Rect textRect = {x, y - 30, strlen(name)*10, 25};
-
+    // Rendering text
     SDL_RenderCopy(window->gRenderer, textTexture, NULL, &textRect);
-
+    // Freeing resources
     SDL_FreeSurface(textSurface);
     SDL_DestroyTexture(textTexture);
     TTF_CloseFont(sans);

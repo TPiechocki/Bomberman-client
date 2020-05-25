@@ -17,13 +17,13 @@ void initPlayer(Board *board,int player_number, int x, int y, int bomb) {
     player->isAlive = 1;
 
     player->counter = 0;
-    player->onBomb = 0;
     player->placedBomb = 0;
     player->bombId = bomb;
 
     player->image.w = board->length / board->size * 7 / 10;
     player->image.h = player->image.w;
 
+    // Setting up starting position depending on player number
     if(x == 0 || y == 0)
     {
         switch(player_number){
@@ -47,6 +47,7 @@ void initPlayer(Board *board,int player_number, int x, int y, int bomb) {
     }
     else
     {
+        // player position on reconnection to server
         player->x = x;
         player->y = y;
     }
@@ -312,7 +313,6 @@ void placeBombPlayer(Board *board){
     if(player->placedBomb == 0) {
     //    placeBomb(bomb, board, player->current_tile);
         player->placedBomb = 1;
-        player->onBomb = 1;
         sendBombEvent(player->current_tile);
     }
 }

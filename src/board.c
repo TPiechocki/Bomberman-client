@@ -3,7 +3,7 @@
 //
 #include "board.h"
 
-void initBoard(SDL_Window* window, int enemy_count){
+void initBoard(SDL_Window* window){
     board = (Board*)malloc(sizeof(Board));
 
     int windowWidth;
@@ -24,7 +24,6 @@ void initBoard(SDL_Window* window, int enemy_count){
     board->tile_length = board->length / board->size;
     board->iceBlocksCount = 25;
     board->breakableIceBlocksCount = 121;
-    board->enemy_count = enemy_count;
 
     for(int i = 0; i < board->breakableIceBlocksCount; i++){
         board->breakableIceBlocks[i] = NULL;
@@ -37,6 +36,7 @@ void initBoard(SDL_Window* window, int enemy_count){
 
 void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
 {
+    // loading sprites
     SDL_Surface *outsideWallSurface= IMG_Load(OUTSIDE_WALL_SPRITE_PATH);
     SDL_Surface *iceBlockSurface= IMG_Load(ICE_WALL_SPRITE_PATH);
     SDL_Surface  *breakableIceBlockSurface = IMG_Load(BREAKABLE_ICE_BLOCK_SPRITE_PATH);
@@ -44,6 +44,7 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
         printf("Blad przy wczytywaniu plikow!");
         return;
     }
+    // converting sprites to textures
     board->outsideWallTexture = SDL_CreateTextureFromSurface(renderer, outsideWallSurface);
     SDL_FreeSurface(outsideWallSurface);
     board->iceBlockTexture = SDL_CreateTextureFromSurface(renderer, iceBlockSurface);
@@ -56,34 +57,34 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 
 
-    //Ustawianie zewnetrznych scian
-    // Górna i dolna ściana na 1/20 wysokości ekranu
-    // Prawa i lewa tak żeby arena była kwadratowa
-    //Gorna sciana
+    // Setting up outside walls
+    // Top and bottom wall at 1/20 of screen height
+    // Left and right filling till arena is a a square
+    // Top wall
     board->outsideWalls[0].w = windowWidth;
     board->outsideWalls[0].h = board->start_y;
     board->outsideWalls[0].x = 0;
     board->outsideWalls[0].y = 0;
 
-    //Dolna sciana
+    // Bottom wall
     board->outsideWalls[1].w = windowWidth;
     board->outsideWalls[1].h = board->start_y;
     board->outsideWalls[1].x = 0;
     board->outsideWalls[1].y = board->end_y;
 
-    //Lewa sciana
+    // Left wall
     board->outsideWalls[2].w = board->start_x;
     board->outsideWalls[2].h = windowHeight;
     board->outsideWalls[2].x = 0;
     board->outsideWalls[2].y = 0;
 
-    //Prawa sciana
+    // Right wall
     board->outsideWalls[3].w = board->start_x;
     board->outsideWalls[3].h = windowHeight;
     board->outsideWalls[3].x = board->end_x;
     board->outsideWalls[3].y = 0;
 
-    // Ice block init
+    // Unbreakable walls init
     int tile_length = board->length / board->size;
     int index = 0;
     int ind = 0;
@@ -102,12 +103,12 @@ void loadBoard(SDL_Window *window, SDL_Renderer *renderer)
     }
 }
 
-void loadBreakable(char* status){
-    pthread_mutex_lock(&board_lock);
+void loadBreakable(char* start){
+    pthread_mutex_lock(&board_lock); // LOCK
     for(int i = 0; i < 121; i++){
         if(((i % board->size) % 2) == 1 && ((i / board->size) %2) == 1)
             continue;
-        if(status[i] && board->breakableIceBlocks[i] == NULL) {
+        if(start[i] && board->breakableIceBlocks[i] == NULL) {
             board->breakableIceBlocks[i] = (SDL_Rect *) malloc(sizeof(SDL_Rect));
 
             board->breakableIceBlocks[i]->w = 0.8 * board->tile_length;
@@ -116,7 +117,7 @@ void loadBreakable(char* status){
             board->breakableIceBlocks[i]->y = (i / board->size) * board->tile_length + board->start_y + 0.1 * board->tile_length;
         }
     }
-    pthread_mutex_unlock(&board_lock);
+    pthread_mutex_unlock(&board_lock); // UNLOCK
 }
 
 void renderOutsideWalls(SDL_Renderer *renderer) {
@@ -127,9 +128,11 @@ void renderOutsideWalls(SDL_Renderer *renderer) {
 void renderChessBoard(SDL_Renderer* renderer){
     int tile_size = (board->length) / board->size; // 11 tiles per arena
 
-    SDL_SetRenderDrawColor(renderer, 0x66, 0x66, 0x66, 0xff); // dark gray
+    // Set renderer draw colour to darker grey
+    SDL_SetRenderDrawColor(renderer, 0x66, 0x66, 0x66, 0xff);
     for(int i = 0; i < board->size; i++){
         for(int j = 0; j < board->size; j++){
+            // Draws darker grey tile every second tile in each direction
             if((i % 2 == 0 && j % 2 == 0) || (i % 2 == 1 && j % 2 == 1)){
                 SDL_Rect tile;
                 tile.w = tile_size;
@@ -140,26 +143,28 @@ void renderChessBoard(SDL_Renderer* renderer){
             }
         }
     }
-    SDL_SetRenderDrawColor(renderer, 0x77, 0x77, 0x77, 0xff); // base bg colour
+    // Sets renderer draw colour to default colour
+    SDL_SetRenderDrawColor(renderer, 0x77, 0x77, 0x77, 0xff);
 }
 
 void renderIceBlocks(SDL_Renderer *renderer) {
-    for(int i = 0; i < 25; i++)
+    for(int i = 0; i < board->iceBlocksCount; i++)
         SDL_RenderCopy(renderer, board->iceBlockTexture, NULL, &board->iceBlocks[i]);
-    for(int i = 0; i < 121; i++)
+    for(int i = 0; i < board->breakableIceBlocksCount; i++)
         if(board->breakableIceBlocks[i] != NULL)
             SDL_RenderCopy(renderer, board->breakableIceBlockTexture, NULL, board->breakableIceBlocks[i]);
 }
 
 void renderBoard(SDL_Renderer *renderer) {
-    pthread_mutex_lock(&board_lock);
+    pthread_mutex_lock(&board_lock); // LOCK
     // Render arena outside walls / colour outside of arena
     renderOutsideWalls(renderer);
     // Render Chessboard pattern
     renderChessBoard(renderer);
     // Render ice blocks
     renderIceBlocks(renderer);
-    pthread_mutex_unlock(&board_lock);
+
+    pthread_mutex_unlock(&board_lock); // UNLOCK
 }
 
 void destroyBreakableIceBlock(int index){

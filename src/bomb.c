@@ -65,7 +65,6 @@ void placeBomb(Bomb *bomb, Board* board, int tile, int explodeTick, int endOfExp
 
 
     if(SDL_HasIntersection(&bomb->bombRect, &player->image)){
-        player->onBomb = 1;
         bomb->underPlayer = 1;
     }
 }
